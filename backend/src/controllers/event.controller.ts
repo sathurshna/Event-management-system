@@ -27,29 +27,59 @@ export const createEvent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// ─── Helper for Pagination & Search ───────────────────────────────────────────
+const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, hostId?: string) => {
+  const { search, date, visibility, page = '1', limit = '10' } = queryParams;
+  const conditions: string[] = [];
+  const values: any[] = [];
+
+  if (isPublic) {
+    conditions.push('e.is_public = 1');
+  } else if (hostId) {
+    conditions.push('e.host_id = ?');
+    values.push(hostId);
+  }
+
+  if (search) {
+    conditions.push('(e.title LIKE ? OR e.description LIKE ?)');
+    values.push(`%${search}%`, `%${search}%`);
+  }
+
+  if (date) {
+    conditions.push('DATE(e.date) = ?');
+    values.push(date);
+  }
+  
+  if (!isPublic && visibility) {
+    conditions.push('e.is_public = ?');
+    values.push(visibility === 'public' ? 1 : 0);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
+  
+  const finalQuery = `${baseQuery} ${whereClause} ORDER BY e.date ASC LIMIT ? OFFSET ?`;
+  values.push(parseInt(limit as string), offset);
+
+  return { finalQuery, values };
+};
+
 // ─── Get My Events ────────────────────────────────────────────────────────────
 export const getMyEvents = catchAsync(async (req: Request, res: Response) => {
   const hostId = req.user!.userId;
+  const base = `SELECT e.id, e.title, e.description, e.date, e.location, e.is_public, e.cover_image, e.created_at FROM events e`;
+  const { finalQuery, values } = buildQuery(base, req.query, false, hostId);
 
-  const [events] = await pool.query<RowDataPacket[]>(
-    `SELECT id, title, description, date, location, is_public, cover_image, created_at 
-     FROM events WHERE host_id = ? ORDER BY date ASC`,
-    [hostId]
-  );
-
+  const [events] = await pool.query<RowDataPacket[]>(finalQuery, values);
   res.status(200).json({ success: true, data: events });
 });
 
 // ─── Get Public Events ────────────────────────────────────────────────────────
 export const getPublicEvents = catchAsync(async (req: Request, res: Response) => {
-  const [events] = await pool.query<RowDataPacket[]>(
-    `SELECT e.id, e.title, e.description, e.date, e.location, e.cover_image, u.name as host_name, u.avatar as host_avatar
-     FROM events e 
-     JOIN users u ON e.host_id = u.id 
-     WHERE e.is_public = 1 
-     ORDER BY e.date ASC`
-  );
+  const base = `SELECT e.id, e.title, e.description, e.date, e.location, e.cover_image, u.name as host_name, u.avatar as host_avatar FROM events e JOIN users u ON e.host_id = u.id`;
+  const { finalQuery, values } = buildQuery(base, req.query, true);
 
+  const [events] = await pool.query<RowDataPacket[]>(finalQuery, values);
   res.status(200).json({ success: true, data: events });
 });
 
