@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/prisma';
+import { pool } from '../config/db';
+import { v4 as uuidv4 } from 'uuid';
 import {
   hashPassword,
   comparePassword,
@@ -11,6 +12,7 @@ import {
 } from '../utils/auth.utils';
 import { catchAsync, AppError } from '../middleware/errorHandler';
 import { RegisterInput, LoginInput } from '../middleware/validate';
+import { RowDataPacket } from 'mysql2';
 
 // Helper: send tokens in response
 const sendTokenResponse = async (
@@ -23,11 +25,14 @@ const sendTokenResponse = async (
   const accessToken  = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
-  // Store refresh token in DB (so we can invalidate on logout)
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-  await prisma.refreshToken.create({
-    data: { token: refreshToken, userId, expiresAt },
-  });
+
+  // Delete old refresh token for this user to keep it clean (optional logic)
+  // Store refresh token in DB
+  await pool.query(
+    'INSERT INTO refresh_tokens (id, token, expires_at, user_id) VALUES (?, ?, ?, ?)',
+    [uuidv4(), refreshToken, expiresAt, userId]
+  );
 
   // Set refresh token as HTTP-only cookie
   res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, refreshTokenCookieOptions);
@@ -43,16 +48,19 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   const { name, email, password } = req.body as RegisterInput;
 
   // Check if email already taken
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) throw new AppError('An account with this email already exists.', 409);
+  const [existing] = await pool.query<RowDataPacket[]>('SELECT id FROM users WHERE email = ?', [email]);
+  if (existing.length > 0) throw new AppError('An account with this email already exists.', 409);
 
   // Hash password and create user
   const hashedPassword = await hashPassword(password);
-  const user = await prisma.user.create({
-    data: { name, email, password: hashedPassword },
-  });
+  const userId = uuidv4();
+  
+  await pool.query(
+    'INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)',
+    [userId, name, email, hashedPassword]
+  );
 
-  await sendTokenResponse(user.id, user.email, res, 201);
+  await sendTokenResponse(userId, email, res, 201);
 });
 
 // ─── Login ────────────────────────────────────────────────────────────────────
@@ -60,7 +68,8 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body as LoginInput;
 
   // Find user
-  const user = await prisma.user.findUnique({ where: { email } });
+  const [users] = await pool.query<RowDataPacket[]>('SELECT * FROM users WHERE email = ?', [email]);
+  const user = users[0];
   if (!user) throw new AppError('Invalid email or password.', 401);
 
   // Compare password
@@ -79,13 +88,15 @@ export const refresh = catchAsync(async (req: Request, res: Response) => {
   const payload = verifyRefreshToken(token);
 
   // Check it exists in DB and is not expired
-  const stored = await prisma.refreshToken.findUnique({ where: { token } });
-  if (!stored || stored.expiresAt < new Date()) {
+  const [storedTokens] = await pool.query<RowDataPacket[]>('SELECT * FROM refresh_tokens WHERE token = ?', [token]);
+  const stored = storedTokens[0];
+
+  if (!stored || new Date(stored.expires_at) < new Date()) {
     throw new AppError('Invalid or expired session. Please log in again.', 401);
   }
 
-  // Delete old refresh token (rotate tokens for security)
-  await prisma.refreshToken.delete({ where: { token } });
+  // Delete old refresh token
+  await pool.query('DELETE FROM refresh_tokens WHERE token = ?', [token]);
 
   // Issue a new pair
   await sendTokenResponse(payload.userId, payload.email, res);
@@ -96,8 +107,8 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies[REFRESH_TOKEN_COOKIE];
 
   if (token) {
-    // Remove from DB (invalidate)
-    await prisma.refreshToken.deleteMany({ where: { token } });
+    // Remove from DB
+    await pool.query('DELETE FROM refresh_tokens WHERE token = ?', [token]);
     // Clear cookie
     res.clearCookie(REFRESH_TOKEN_COOKIE, { path: '/' });
   }
@@ -107,21 +118,26 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
 
 // ─── Get Me (current user) ────────────────────────────────────────────────────
 export const getMe = catchAsync(async (req: Request, res: Response) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.user!.userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      avatar: true,
-      createdAt: true,
-      _count: {
-        select: { events: true, rsvps: true },
-      },
-    },
-  });
-
+  const [users] = await pool.query<RowDataPacket[]>(
+    'SELECT id, name, email, avatar, created_at as createdAt FROM users WHERE id = ?',
+    [req.user!.userId]
+  );
+  
+  const user = users[0];
   if (!user) throw new AppError('User not found.', 404);
 
-  res.status(200).json({ success: true, data: user });
+  // Count events and rsvps for the user
+  const [eventCountResult] = await pool.query<RowDataPacket[]>('SELECT COUNT(*) as count FROM events WHERE host_id = ?', [user.id]);
+  const [rsvpCountResult] = await pool.query<RowDataPacket[]>('SELECT COUNT(*) as count FROM rsvps WHERE user_id = ?', [user.id]);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      ...user,
+      _count: {
+        events: eventCountResult[0].count,
+        rsvps: rsvpCountResult[0].count
+      }
+    }
+  });
 });
