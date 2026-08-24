@@ -1,0 +1,26 @@
+# Root
+.DS_Store
+*.log
+*.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+
+# Prisma
+backend/prisma/migrations/
+
+# Uploads
+backend/uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
