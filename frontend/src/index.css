@@ -124,3 +124,34 @@ h1, h2, h3, h4 {
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+
+/* Layout & Sidebar */
+.desktop-only { display: none; }
+.mobile-only { display: inline-flex; }
+
+@media (min-width: 768px) {
+  .desktop-only { display: inline-flex; }
+  .mobile-only { display: none !important; }
+  
+  .layout-wrapper .main-content {
+    margin-left: 260px;
+  }
+  
+  .sidebar {
+    transform: translateX(0) !important;
+  }
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, var(--border-color) 4%, var(--border-color-glass) 25%, var(--border-color) 36%);
+  background-size: 1000px 100%;
+}
+
+
