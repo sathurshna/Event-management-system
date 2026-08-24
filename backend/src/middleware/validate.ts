@@ -60,7 +60,26 @@ export const loginSchema = z.object({
     .min(1, 'Password is required'),
 });
 
+// ─── Event Schemas ────────────────────────────────────────────────────────────
+
+export const createEventSchema = z.object({
+  title: z
+    .string({ required_error: 'Title is required' })
+    .min(3, 'Title must be at least 3 characters')
+    .max(255, 'Title cannot exceed 255 characters'),
+  description: z.string().optional(),
+  date: z.string().datetime({ message: 'Invalid date format' }),
+  endDate: z.string().datetime({ message: 'Invalid end date format' }).optional(),
+  location: z.string().max(255).optional(),
+  isPublic: z.boolean().default(false),
+  coverImage: z.string().url('Cover image must be a valid URL').optional(),
+});
+
+export const updateEventSchema = createEventSchema.partial();
+
 // ─── TypeScript Types from Schemas ────────────────────────────────────────────
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput    = z.infer<typeof loginSchema>;
+export type CreateEventInput = z.infer<typeof createEventSchema>;
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;
