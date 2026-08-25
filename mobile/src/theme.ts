@@ -43,7 +43,7 @@ export const globalStyles = {
   },
   inputContainer: {
     flexDirection: 'row' as const,
-    alignItems: 'center',
+    alignItems: 'center' as const,
     backgroundColor: 'rgba(15, 23, 42, 0.6)',
     borderWidth: 1,
     borderColor: colors.border,

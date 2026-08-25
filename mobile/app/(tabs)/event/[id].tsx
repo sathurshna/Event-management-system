@@ -1,29 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Share } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Calendar, MapPin, User, Share2 } from 'lucide-react-native';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
+import { ArrowLeft, Calendar, MapPin, User, Share2, Mail, Edit } from 'lucide-react-native';
 import api from '../../../src/utils/api';
 import { globalStyles, colors, spacing } from '../../../src/theme';
+import { useAuth } from '../../../src/context/AuthContext';
+import RsvpSection from '../../../src/components/RsvpSection';
+import InviteModal from '../../../src/components/InviteModal';
 
 export default function EventDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isInviteModalOpen, setInviteModalOpen] = useState(false);
+  const [focusCount, setFocusCount] = useState(0);
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const response = await api.get(`/events/${id}`);
-        setEvent(response.data.data);
-      } catch (error) {
-        console.error('Failed to fetch event', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEvent();
-  }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchEvent = async () => {
+        try {
+          const response = await api.get(`/events/${id}`);
+          setEvent(response.data.data);
+        } catch (error) {
+          console.log('Failed to fetch event', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchEvent();
+      // Increment focusCount so RsvpSection remounts & refetches
+      setFocusCount(c => c + 1);
+    }, [id])
+  );
 
   const handleShare = async () => {
     try {
@@ -32,7 +43,7 @@ export default function EventDetail() {
         url: `http://localhost:5173/events/${id}`, // Web URL for sharing
       });
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -58,6 +69,8 @@ export default function EventDetail() {
   const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
+
+  const isOwner = user?.id === event.host_id;
 
   return (
     <View style={globalStyles.container}>
@@ -92,7 +105,26 @@ export default function EventDetail() {
         {/* Content Area */}
         <View style={{ padding: spacing.lg, paddingBottom: 100 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg }}>
-            <Text style={{ color: colors.textMain, fontSize: 28, fontWeight: 'bold', flex: 1 }}>{event.title}</Text>
+            <Text style={{ color: colors.textMain, fontSize: 28, fontWeight: 'bold', flex: 1, marginRight: 16 }}>{event.title}</Text>
+            
+            {isOwner && (
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <TouchableOpacity 
+                  onPress={() => router.push(`/events/${id}/edit`)}
+                  style={{ backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
+                >
+                  <Edit color="white" size={16} />
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  onPress={() => setInviteModalOpen(true)}
+                  style={{ backgroundColor: colors.secondary, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
+                >
+                  <Mail color="white" size={16} style={{ marginRight: 6 }} />
+                  <Text style={{ color: 'white', fontWeight: 'bold' }}>Invite</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           {/* Info Blocks */}
@@ -133,8 +165,17 @@ export default function EventDetail() {
           <Text style={{ color: colors.textMuted, fontSize: 16, lineHeight: 24 }}>
             {event.description}
           </Text>
+
+          {/* RSVP and Attendees */}
+          <RsvpSection key={focusCount} eventId={id as string} isOwner={isOwner} hostId={event.host_id} />
         </View>
       </ScrollView>
+
+      <InviteModal 
+        isVisible={isInviteModalOpen} 
+        onClose={() => setInviteModalOpen(false)} 
+        eventId={id as string} 
+      />
     </View>
   );
 }

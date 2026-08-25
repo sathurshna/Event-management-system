@@ -72,10 +72,25 @@ export const createEventSchema = z.object({
   endDate: z.string().datetime({ message: 'Invalid end date format' }).optional(),
   location: z.string().max(255).optional(),
   isPublic: z.boolean().default(false),
-  coverImage: z.string().url('Cover image must be a valid URL').optional(),
+  coverImage: z.string().optional().nullable(),
 });
 
 export const updateEventSchema = createEventSchema.partial();
+
+// ─── RSVP & Invitation Schemas ────────────────────────────────────────────────
+
+export const rsvpSchema = z.object({
+  status: z.enum(['ATTENDING', 'MAYBE', 'DECLINED'], { required_error: 'Status is required' }),
+  note: z.string().max(500).optional().nullable(),
+});
+
+export const invitationSchema = z.object({
+  email: z
+    .string({ required_error: 'Email is required' })
+    .email('Please provide a valid email address')
+    .toLowerCase()
+    .trim(),
+});
 
 // ─── TypeScript Types from Schemas ────────────────────────────────────────────
 
@@ -83,3 +98,5 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput    = z.infer<typeof loginSchema>;
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 export type UpdateEventInput = z.infer<typeof updateEventSchema>;
+export type RsvpInput        = z.infer<typeof rsvpSchema>;
+export type InvitationInput  = z.infer<typeof invitationSchema>;

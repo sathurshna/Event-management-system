@@ -18,8 +18,8 @@ app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true,          // allow cookies from frontend
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
@@ -30,9 +30,15 @@ app.get('/api/health', (_req, res) => {
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 import eventRoutes from './routes/event.routes';
+import notificationRoutes from './routes/notification.routes';
+import rsvpRoutes from './routes/rsvp.routes';
+import invitationRoutes from './routes/invitation.routes';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/rsvps', rsvpRoutes);
+app.use('/api/invites', invitationRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use(errorHandler);

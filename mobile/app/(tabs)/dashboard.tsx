@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../src/context/AuthContext';
 import { globalStyles, colors, spacing } from '../../src/theme';
 import { LogOut } from 'lucide-react-native';
 import api from '../../src/utils/api';
 import EventCard from '../../src/components/EventCard';
+import NotificationBell from '../../src/components/NotificationBell';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const [events, setEvents] = useState<any[]>([]);
+  const [category, setCategory] = useState<'all' | 'hosting' | 'attending'>('all');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -18,16 +21,18 @@ export default function Dashboard() {
       const response = await api.get('/events?limit=20');
       setEvents(response.data.data);
     } catch (error) {
-      console.error('Failed to fetch events', error);
+      console.log('Failed to fetch events', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents();
+    }, [])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -39,17 +44,50 @@ export default function Dashboard() {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
         <Text style={{ color: colors.textMain, fontSize: 28, fontWeight: 'bold' }}>Dashboard</Text>
         
-        <TouchableOpacity 
-          onPress={logout}
-          style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.error, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 }}
-        >
-          <LogOut color="white" size={16} />
-          <Text style={{ color: 'white', marginLeft: 8, fontWeight: 'bold' }}>Sign Out</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <NotificationBell />
+          <TouchableOpacity 
+            onPress={logout}
+            style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.error, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 }}
+          >
+            <LogOut color="white" size={16} />
+            <Text style={{ color: 'white', marginLeft: 8, fontWeight: 'bold' }}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <Text style={{ color: colors.textMuted, fontSize: 16 }}>Welcome back, {user?.name}</Text>
+      <Text style={{ color: colors.textMuted, fontSize: 16, marginBottom: spacing.md }}>Welcome back, {user?.name}</Text>
+      
+      <View style={{ flexDirection: 'row', gap: 8, paddingBottom: 4 }}>
+        {(['all', 'hosting', 'attending'] as const).map(cat => (
+          <TouchableOpacity
+            key={cat}
+            onPress={() => setCategory(cat)}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 20,
+              backgroundColor: category === cat ? colors.primary : 'rgba(255,255,255,0.05)',
+            }}
+          >
+            <Text style={{
+              color: category === cat ? 'white' : colors.textMuted,
+              fontWeight: '600',
+              textTransform: 'capitalize'
+            }}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
+
+  let filteredEvents = events;
+  if (category === 'hosting') {
+    filteredEvents = events.filter(e => e.host_id === user?.id);
+  } else if (category === 'attending') {
+    filteredEvents = events.filter(e => e.host_id !== user?.id);
+  }
 
   return (
     <View style={[globalStyles.container, { paddingTop: 60 }]}>
@@ -59,7 +97,7 @@ export default function Dashboard() {
         </View>
       ) : (
         <FlatList
-          data={events}
+          data={filteredEvents}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <EventCard {...item} />}
           ListHeaderComponent={renderHeader}

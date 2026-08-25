@@ -4,7 +4,7 @@ import { useRouter, useSegments } from 'expo-router';
 import api from '../utils/api';
 
 export interface User {
-  userId: string;
+  id: string;
   name: string;
   email: string;
 }

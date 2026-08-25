@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu, LogOut, Bell } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import NotificationsDropdown from '../ui/NotificationsDropdown';
 
 interface TopbarProps {
   toggleSidebar: () => void;
@@ -39,9 +40,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-          <Bell size={20} />
-        </button>
+        <NotificationsDropdown />
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid var(--border-color)', paddingLeft: '16px' }}>
           <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>

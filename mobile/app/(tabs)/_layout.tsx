@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
-import { Home } from 'lucide-react-native';
+import { Home, Bell, Plus } from 'lucide-react-native';
 import { colors } from '../../src/theme';
+import NotificationBell from '../../src/components/NotificationBell';
 
 export default function TabLayout() {
   return (
@@ -20,6 +21,30 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color }) => <Home color={color} size={24} />,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="create"
+        options={{
+          title: 'Create',
+          tabBarIcon: ({ color }) => <Plus color={color} size={24} />,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Notifications',
+          tabBarIcon: ({ color }) => <Bell color={color} size={24} />,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="event/[id]"
+        options={{
+          href: null,
+          headerShown: false,
         }}
       />
     </Tabs>
