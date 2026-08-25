@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Filter, CalendarPlus } from 'lucide-react';
 import api from '../utils/api';
 import EventCard from '../components/events/EventCard';
@@ -59,10 +60,12 @@ const EventsList: React.FC = () => {
           <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>My Events</h1>
           <p className="text-muted">Manage and track all your upcoming events.</p>
         </div>
-        <button className="btn-primary" style={{ width: 'auto' }}>
-          <CalendarPlus size={20} style={{ marginRight: '8px' }} />
-          Create Event
-        </button>
+        <Link to="/events/create" style={{ textDecoration: 'none' }}>
+          <button className="btn-primary" style={{ width: 'auto' }}>
+            <CalendarPlus size={20} style={{ marginRight: '8px' }} />
+            Create Event
+          </button>
+        </Link>
       </div>
 
       {/* Filter & Search Bar */}
