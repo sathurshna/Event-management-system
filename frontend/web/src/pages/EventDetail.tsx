@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Calendar, MapPin, User, Users, Share2, Edit, Trash2, ArrowLeft, Mail } from 'lucide-react';
+import { Calendar, MapPin, User, Users, Share2, Edit, Trash2, ArrowLeft, Mail, Globe, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -50,6 +50,17 @@ const EventDetail: React.FC = () => {
     }
   };
 
+  const toggleVisibility = async () => {
+    if (!isOwner) return;
+    try {
+      await api.put(`/events/${id}`, { isPublic: !event.is_public });
+      setEvent((prev: any) => ({ ...prev, is_public: !prev.is_public }));
+      toast.success(event.is_public ? 'Event is now private' : 'Event is now public');
+    } catch (error) {
+      toast.error('Failed to update event visibility');
+    }
+  };
+
   if (loading) return <div style={{ maxWidth: '1200px', margin: '0 auto' }}><EventSkeleton /></div>;
   if (!event) return null;
 
@@ -73,13 +84,22 @@ const EventDetail: React.FC = () => {
             <div className="flex-center" style={{ width: '100%', height: '100%', color: 'var(--text-muted)' }}>No Cover Image</div>
           )}
           
-          <div style={{
-            position: 'absolute', top: '16px', right: '16px',
-            backgroundColor: event.is_public ? 'var(--secondary-color)' : 'var(--primary-color)',
-            color: 'white', padding: '6px 16px', borderRadius: '100px', fontSize: '0.875rem', fontWeight: 600
-          }}>
+          <button 
+            onClick={toggleVisibility}
+            disabled={!isOwner}
+            style={{
+              position: 'absolute', top: '16px', right: '16px',
+              backgroundColor: event.is_public ? 'var(--secondary-color)' : 'var(--primary-color)',
+              color: 'white', padding: '6px 16px', borderRadius: '100px', fontSize: '0.875rem', fontWeight: 600,
+              border: 'none', cursor: isOwner ? 'pointer' : 'default',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}
+            title={isOwner ? "Click to toggle visibility" : ""}
+          >
+            {event.is_public ? <Globe size={16} /> : <Lock size={16} />}
             {event.is_public ? 'Public Event' : 'Private Event'}
-          </div>
+          </button>
         </div>
 
         {/* Content */}

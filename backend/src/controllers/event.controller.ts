@@ -48,11 +48,11 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, host
       conditions.push('e.host_id = ?');
       values.push(hostId);
     } else if (category === 'attending') {
-      conditions.push(`(e.host_id != ? AND EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ?))`);
+      conditions.push(`(e.host_id != ? AND EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING'))`);
       values.push(hostId, hostId);
     } else {
       // Default to 'all'
-      conditions.push(`(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ?))`);
+      conditions.push(`(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status != 'DECLINED'))`);
       values.push(hostId, hostId);
     }
   }
@@ -115,9 +115,16 @@ export const getEventDetail = catchAsync(async (req: Request, res: Response) => 
   if (events.length === 0) throw new AppError('Event not found', 404);
   const event = events[0];
 
-  // If it's private, only the host or invited users should see it (basic check for now: only host)
+  // If it's private, only the host or invited users should see it
   if (!event.is_public && (!req.user || req.user.userId !== event.host_id)) {
-    throw new AppError('You do not have permission to view this event', 403);
+    if (!req.user) {
+      throw new AppError('You do not have permission to view this event', 403);
+    }
+    // Check if the user is invited and accepted (has an RSVP)
+    const [rsvps] = await pool.query<RowDataPacket[]>('SELECT id, status FROM rsvps WHERE event_id = ? AND user_id = ?', [id, req.user.userId]);
+    if (rsvps.length === 0 || rsvps[0].status === 'DECLINED') {
+      throw new AppError('You do not have permission to view this event', 403);
+    }
   }
 
   res.status(200).json({ success: true, data: event });
