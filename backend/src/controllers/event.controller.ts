@@ -1,0 +1,135 @@
+import { Request, Response } from 'express';
+import { pool } from '../config/db';
+import { v4 as uuidv4 } from 'uuid';
+import { catchAsync, AppError } from '../middleware/errorHandler';
+import { CreateEventInput, UpdateEventInput } from '../middleware/validate';
+import { RowDataPacket, ResultSetHeader } from 'mysql2';
+
+// ─── Create Event ─────────────────────────────────────────────────────────────
+export const createEvent = catchAsync(async (req: Request, res: Response) => {
+  const { title, description, date, endDate, location, isPublic, coverImage } = req.body as CreateEventInput;
+  const hostId = req.user!.userId;
+  const eventId = uuidv4();
+
+  const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
+  const formattedEndDate = endDate ? new Date(endDate).toISOString().slice(0, 19).replace('T', ' ') : null;
+
+  await pool.query(
+    `INSERT INTO events (id, title, description, date, end_date, location, is_public, cover_image, host_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [eventId, title, description, formattedDate, formattedEndDate, location, isPublic ? 1 : 0, coverImage, hostId]
+  );
+
+  res.status(201).json({
+    success: true,
+    data: { id: eventId },
+    message: 'Event created successfully',
+  });
+});
+
+// ─── Get My Events ────────────────────────────────────────────────────────────
+export const getMyEvents = catchAsync(async (req: Request, res: Response) => {
+  const hostId = req.user!.userId;
+
+  const [events] = await pool.query<RowDataPacket[]>(
+    `SELECT id, title, description, date, location, is_public, cover_image, created_at 
+     FROM events WHERE host_id = ? ORDER BY date ASC`,
+    [hostId]
+  );
+
+  res.status(200).json({ success: true, data: events });
+});
+
+// ─── Get Public Events ────────────────────────────────────────────────────────
+export const getPublicEvents = catchAsync(async (req: Request, res: Response) => {
+  const [events] = await pool.query<RowDataPacket[]>(
+    `SELECT e.id, e.title, e.description, e.date, e.location, e.cover_image, u.name as host_name, u.avatar as host_avatar
+     FROM events e 
+     JOIN users u ON e.host_id = u.id 
+     WHERE e.is_public = 1 
+     ORDER BY e.date ASC`
+  );
+
+  res.status(200).json({ success: true, data: events });
+});
+
+// ─── Get Event Detail ─────────────────────────────────────────────────────────
+export const getEventDetail = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const [events] = await pool.query<RowDataPacket[]>(
+    `SELECT e.*, u.name as host_name, u.avatar as host_avatar
+     FROM events e 
+     JOIN users u ON e.host_id = u.id 
+     WHERE e.id = ?`,
+    [id]
+  );
+
+  if (events.length === 0) throw new AppError('Event not found', 404);
+  const event = events[0];
+
+  // If it's private, only the host or invited users should see it (basic check for now: only host)
+  if (!event.is_public && (!req.user || req.user.userId !== event.host_id)) {
+    throw new AppError('You do not have permission to view this event', 403);
+  }
+
+  res.status(200).json({ success: true, data: event });
+});
+
+// ─── Update Event ─────────────────────────────────────────────────────────────
+export const updateEvent = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updateData = req.body as UpdateEventInput;
+  const hostId = req.user!.userId;
+
+  // Check if event exists and user is host
+  const [events] = await pool.query<RowDataPacket[]>('SELECT host_id FROM events WHERE id = ?', [id]);
+  if (events.length === 0) throw new AppError('Event not found', 404);
+  if (events[0].host_id !== hostId) throw new AppError('Not authorized to update this event', 403);
+
+  // Dynamically build the update query
+  const fields: string[] = [];
+  const values: any[] = [];
+
+  if (updateData.title !== undefined) { fields.push('title = ?'); values.push(updateData.title); }
+  if (updateData.description !== undefined) { fields.push('description = ?'); values.push(updateData.description); }
+  if (updateData.date !== undefined) { 
+    fields.push('date = ?'); 
+    values.push(new Date(updateData.date).toISOString().slice(0, 19).replace('T', ' ')); 
+  }
+  if (updateData.endDate !== undefined) { 
+    fields.push('end_date = ?'); 
+    values.push(updateData.endDate ? new Date(updateData.endDate).toISOString().slice(0, 19).replace('T', ' ') : null); 
+  }
+  if (updateData.location !== undefined) { fields.push('location = ?'); values.push(updateData.location); }
+  if (updateData.isPublic !== undefined) { fields.push('is_public = ?'); values.push(updateData.isPublic ? 1 : 0); }
+  if (updateData.coverImage !== undefined) { fields.push('cover_image = ?'); values.push(updateData.coverImage); }
+
+  if (fields.length === 0) throw new AppError('No data provided to update', 400);
+
+  values.push(id); // For the WHERE clause
+
+  await pool.query(
+    `UPDATE events SET ${fields.join(', ')} WHERE id = ?`,
+    values
+  );
+
+  res.status(200).json({ success: true, message: 'Event updated successfully' });
+});
+
+// ─── Delete Event ─────────────────────────────────────────────────────────────
+export const deleteEvent = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const hostId = req.user!.userId;
+
+  const [result] = await pool.query<ResultSetHeader>(
+    'DELETE FROM events WHERE id = ? AND host_id = ?',
+    [id, hostId]
+  );
+
+  if (result.affectedRows === 0) {
+    throw new AppError('Event not found or not authorized to delete', 404);
+  }
+
+  res.status(200).json({ success: true, message: 'Event deleted successfully' });
+});

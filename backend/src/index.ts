@@ -29,7 +29,10 @@ app.get('/api/health', (_req, res) => {
 });
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
+import eventRoutes from './routes/event.routes';
+
 app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use(errorHandler);
