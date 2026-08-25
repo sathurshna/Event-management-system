@@ -7,8 +7,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import EventsList from './pages/EventsList';
 
 import './index.css';
+
+import Layout from './components/layout/Layout';
 
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -23,7 +26,10 @@ const AppRoutes = () => {
       <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
       
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/events" element={<EventsList />} />
+        </Route>
       </Route>
     </Routes>
   );

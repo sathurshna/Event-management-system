@@ -1,0 +1,135 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Filter, CalendarPlus } from 'lucide-react';
+import api from '../utils/api';
+import EventCard from '../components/events/EventCard';
+import EventSkeleton from '../components/events/EventSkeleton';
+import Pagination from '../components/ui/Pagination';
+
+const EventsList: React.FC = () => {
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Filters & Pagination state
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [visibility, setVisibility] = useState<'all' | 'public' | 'private'>('all');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // Assuming 1 page for now as backend doesn't return total count yet
+  const limit = 6;
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset to page 1 on new search
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Fetch events
+  const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      if (debouncedSearch) queryParams.append('search', debouncedSearch);
+      if (visibility !== 'all') queryParams.append('visibility', visibility);
+
+      const response = await api.get(`/events?${queryParams.toString()}`);
+      setEvents(response.data.data);
+      // If we fetch `limit` items, assume there might be a next page
+      setTotalPages(response.data.data.length === limit ? page + 1 : page);
+    } catch (error) {
+      console.error('Failed to fetch events', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, debouncedSearch, visibility]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  return (
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>My Events</h1>
+          <p className="text-muted">Manage and track all your upcoming events.</p>
+        </div>
+        <button className="btn-primary" style={{ width: 'auto' }}>
+          <CalendarPlus size={20} style={{ marginRight: '8px' }} />
+          Create Event
+        </button>
+      </div>
+
+      {/* Filter & Search Bar */}
+      <div className="glass-panel" style={{ padding: '16px', marginBottom: '32px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ position: 'relative', flex: '1 1 300px' }}>
+          <Search size={18} style={{ position: 'absolute', left: '12px', top: '16px', color: 'var(--text-muted)' }} />
+          <input 
+            type="text" 
+            className="input-field" 
+            placeholder="Search events by title or description..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ paddingLeft: '40px', margin: 0, backgroundColor: 'rgba(0,0,0,0.2)' }}
+          />
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Filter size={18} className="text-muted" />
+          <select 
+            className="input-field" 
+            style={{ width: 'auto', margin: 0, backgroundColor: 'rgba(0,0,0,0.2)', color: 'var(--text-main)' }}
+            value={visibility}
+            onChange={(e) => {
+              setVisibility(e.target.value as any);
+              setPage(1);
+            }}
+          >
+            <option value="all" style={{ color: 'black' }}>All Visibility</option>
+            <option value="public" style={{ color: 'black' }}>Public Only</option>
+            <option value="private" style={{ color: 'black' }}>Private Only</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Event Grid */}
+      {loading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+          {[1, 2, 3, 4, 5, 6].map((n) => <EventSkeleton key={n} />)}
+        </div>
+      ) : events.length > 0 ? (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+            {events.map((event) => (
+              <EventCard key={event.id} {...event} />
+            ))}
+          </div>
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
+      ) : (
+        /* Empty State */
+        <div className="glass-panel flex-center" style={{ padding: '64px 24px', flexDirection: 'column', textAlign: 'center' }}>
+          <div style={{ width: '80px', height: '80px', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+            <CalendarPlus size={40} color="var(--primary-color)" />
+          </div>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>No events found</h3>
+          <p className="text-muted" style={{ maxWidth: '400px', marginBottom: '24px' }}>
+            {search ? `We couldn't find any events matching "${search}".` : "You haven't created any events yet. Get started by creating your first event!"}
+          </p>
+          {!search && (
+            <button className="btn-primary" style={{ width: 'auto' }}>
+              Create Your First Event
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EventsList;
