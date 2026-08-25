@@ -8,6 +8,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import EventsList from './pages/EventsList';
+import CreateEvent from './pages/CreateEvent';
+import EditEvent from './pages/EditEvent';
+import EventDetail from './pages/EventDetail';
 
 import './index.css';
 
@@ -29,6 +32,9 @@ const AppRoutes = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/events" element={<EventsList />} />
+          <Route path="/events/create" element={<CreateEvent />} />
+          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/events/:id/edit" element={<EditEvent />} />
         </Route>
       </Route>
     </Routes>
