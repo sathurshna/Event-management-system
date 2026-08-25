@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Calendar, MapPin, User, Users, Share2, Edit, Trash2, ArrowLeft } from 'lucide-react';
+import { Calendar, MapPin, User, Users, Share2, Edit, Trash2, ArrowLeft, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/ui/Modal';
-import EventSkeleton from '../components/events/EventSkeleton'; // Reusing for a simple loader
+import EventSkeleton from '../components/events/EventSkeleton';
+import RsvpSection from '../components/events/RsvpSection';
+import InviteModal from '../components/events/InviteModal';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +17,7 @@ const EventDetail: React.FC = () => {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isInviteModalOpen, setInviteModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -50,7 +53,7 @@ const EventDetail: React.FC = () => {
   if (loading) return <div style={{ maxWidth: '1200px', margin: '0 auto' }}><EventSkeleton /></div>;
   if (!event) return null;
 
-  const isOwner = user?.userId === event.host_id;
+  const isOwner = user?.id === event.host_id;
   const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
@@ -91,6 +94,9 @@ const EventDetail: React.FC = () => {
               
               {isOwner && (
                 <>
+                  <button onClick={() => setInviteModalOpen(true)} className="btn-primary" style={{ width: 'auto', backgroundColor: 'var(--secondary-color)' }}>
+                    <Mail size={18} style={{ marginRight: '8px' }} /> Invite
+                  </button>
                   <button onClick={() => navigate(`/events/${id}/edit`)} className="btn-primary" style={{ width: 'auto', backgroundColor: 'var(--primary-color)' }}>
                     <Edit size={18} style={{ marginRight: '8px' }} /> Edit
                   </button>
@@ -140,6 +146,8 @@ const EventDetail: React.FC = () => {
               {event.description}
             </p>
           </div>
+
+          <RsvpSection eventId={event.id} isOwner={isOwner} hostId={event.host_id} />
         </div>
       </div>
 
@@ -151,6 +159,12 @@ const EventDetail: React.FC = () => {
         message={`Are you sure you want to delete "${event.title}"? This action cannot be undone.`}
         confirmText="Delete Event"
         isDestructive={true}
+      />
+
+      <InviteModal 
+        isOpen={isInviteModalOpen} 
+        onClose={() => setInviteModalOpen(false)} 
+        eventId={event.id} 
       />
     </div>
   );

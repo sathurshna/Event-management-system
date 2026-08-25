@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, Filter, CalendarPlus } from 'lucide-react';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/events/EventCard';
 import EventSkeleton from '../components/events/EventSkeleton';
 import Pagination from '../components/ui/Pagination';
 
 const EventsList: React.FC = () => {
+  const { user } = useAuth();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   
   // Filters & Pagination state
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [visibility, setVisibility] = useState<'all' | 'public' | 'private'>('all');
+  const [category, setCategory] = useState<'all' | 'hosting' | 'attending'>('all');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1); // Assuming 1 page for now as backend doesn't return total count yet
   const limit = 6;
@@ -27,7 +30,6 @@ const EventsList: React.FC = () => {
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Fetch events
   const fetchEvents = useCallback(async () => {
     setLoading(true);
     try {
@@ -36,18 +38,27 @@ const EventsList: React.FC = () => {
         limit: limit.toString(),
       });
       if (debouncedSearch) queryParams.append('search', debouncedSearch);
-      if (visibility !== 'all') queryParams.append('visibility', visibility);
-
+      
       const response = await api.get(`/events?${queryParams.toString()}`);
-      setEvents(response.data.data);
-      // If we fetch `limit` items, assume there might be a next page
+      const userId = user?.id;
+      
+      let filteredData = response.data.data;
+      if (category === 'hosting') {
+        // Events where I am the host
+        filteredData = filteredData.filter((e: any) => e.host_id === userId);
+      } else if (category === 'attending') {
+        // Events where I have an RSVP but I'm NOT the host
+        filteredData = filteredData.filter((e: any) => e.host_id !== userId);
+      }
+
+      setEvents(filteredData);
       setTotalPages(response.data.data.length === limit ? page + 1 : page);
     } catch (error) {
       console.error('Failed to fetch events', error);
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch, visibility]);
+  }, [page, debouncedSearch, category, user?.id]);
 
   useEffect(() => {
     fetchEvents();
@@ -82,21 +93,27 @@ const EventsList: React.FC = () => {
           />
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Filter size={18} className="text-muted" />
-          <select 
-            className="input-field" 
-            style={{ width: 'auto', margin: 0, backgroundColor: 'rgba(0,0,0,0.2)', color: 'var(--text-main)' }}
-            value={visibility}
-            onChange={(e) => {
-              setVisibility(e.target.value as any);
-              setPage(1);
-            }}
-          >
-            <option value="all" style={{ color: 'black' }}>All Visibility</option>
-            <option value="public" style={{ color: 'black' }}>Public Only</option>
-            <option value="private" style={{ color: 'black' }}>Private Only</option>
-          </select>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+        {([['all', 'All Events'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
+            <button
+              key={cat}
+              onClick={() => { setCategory(cat); setPage(1); }}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '20px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                backgroundColor: category === cat ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
+                color: category === cat ? 'white' : 'var(--text-muted)',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -109,7 +126,7 @@ const EventsList: React.FC = () => {
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
             {events.map((event) => (
-              <EventCard key={event.id} {...event} />
+              <EventCard key={event.id} {...event} onClick={() => navigate(`/events/${event.id}`)} />
             ))}
           </div>
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />

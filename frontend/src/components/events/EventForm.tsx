@@ -20,7 +20,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
     description: initialData?.description || '',
     date: initialData?.date ? new Date(initialData.date).toISOString().slice(0, 16) : '', // format for datetime-local
     location: initialData?.location || '',
-    isPublic: initialData?.is_public !== undefined ? initialData.is_public : true,
+    isPublic: initialData?.is_public !== undefined ? Boolean(initialData.is_public) : true,
     coverImage: initialData?.cover_image || '',
   });
 
@@ -63,7 +63,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
         description: formData.description,
         date: new Date(formData.date).toISOString(), // UTC for backend
         location: formData.location,
-        isPublic: formData.isPublic,
+        isPublic: Boolean(formData.isPublic),
         coverImage: formData.coverImage,
       };
 
@@ -79,7 +79,12 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
         navigate(`/events/${response.data.data.id}`);
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to save event');
+      const errorData = error.response?.data;
+      if (errorData?.errors && errorData.errors.length > 0) {
+        toast.error(errorData.errors[0].message);
+      } else {
+        toast.error(errorData?.message || 'Failed to save event');
+      }
     } finally {
       setIsSubmitting(false);
     }

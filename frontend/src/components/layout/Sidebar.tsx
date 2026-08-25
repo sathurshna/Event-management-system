@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, Compass, Settings, X, CalendarPlus } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, Compass, Settings, X, CalendarPlus, Bell } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
     { name: 'My Events', path: '/events', icon: <CalendarDays size={20} /> },
     { name: 'Create Event', path: '/events/create', icon: <CalendarPlus size={20} /> },
     { name: 'Discover', path: '/discover', icon: <Compass size={20} /> },
+    { name: 'Notifications', path: '/notifications', icon: <Bell size={20} /> },
     { name: 'Settings', path: '/settings', icon: <Settings size={20} /> },
   ];
 

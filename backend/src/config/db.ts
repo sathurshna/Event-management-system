@@ -7,6 +7,7 @@ export const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  timezone: '+00:00', // Force UTC so stored datetimes are read back correctly
 });
 
 // Function to test the connection (optional, can be called at startup)

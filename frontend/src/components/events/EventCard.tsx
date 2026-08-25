@@ -9,9 +9,10 @@ interface EventCardProps {
   location: string;
   cover_image: string;
   is_public?: boolean;
+  onClick?: () => void;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ title, description, date, location, cover_image, is_public }) => {
+const EventCard: React.FC<EventCardProps> = ({ title, description, date, location, cover_image, is_public, onClick }) => {
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
@@ -24,8 +25,9 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
         display: 'flex', 
         flexDirection: 'column',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-        cursor: 'pointer'
+        cursor: onClick ? 'pointer' : 'default'
       }}
+      onClick={onClick}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-4px)';
         e.currentTarget.style.boxShadow = 'var(--shadow-glow)';

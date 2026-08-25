@@ -20,6 +20,14 @@ export const createEvent = catchAsync(async (req: Request, res: Response) => {
     [eventId, title, description, formattedDate, formattedEndDate, location, isPublic ? 1 : 0, coverImage, hostId]
   );
 
+  // Auto-RSVP the host as ATTENDING
+  const rsvpId = uuidv4();
+  await pool.query(
+    `INSERT INTO rsvps (id, event_id, user_id, status) VALUES (?, ?, ?, 'ATTENDING')
+     ON DUPLICATE KEY UPDATE status = 'ATTENDING'`,
+    [rsvpId, eventId, hostId]
+  );
+
   res.status(201).json({
     success: true,
     data: { id: eventId },
@@ -36,8 +44,8 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, host
   if (isPublic) {
     conditions.push('e.is_public = 1');
   } else if (hostId) {
-    conditions.push('e.host_id = ?');
-    values.push(hostId);
+    conditions.push(`(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING'))`);
+    values.push(hostId, hostId);
   }
 
   if (search) {
@@ -67,7 +75,7 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, host
 // ─── Get My Events ────────────────────────────────────────────────────────────
 export const getMyEvents = catchAsync(async (req: Request, res: Response) => {
   const hostId = req.user!.userId;
-  const base = `SELECT e.id, e.title, e.description, e.date, e.location, e.is_public, e.cover_image, e.created_at FROM events e`;
+  const base = `SELECT e.id, e.title, e.description, e.date, e.location, e.is_public, e.cover_image, e.created_at, e.host_id FROM events e`;
   const { finalQuery, values } = buildQuery(base, req.query, false, hostId);
 
   const [events] = await pool.query<RowDataPacket[]>(finalQuery, values);
