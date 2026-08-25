@@ -36,22 +36,13 @@ const EventsList: React.FC = () => {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
+        category: category,
       });
       if (debouncedSearch) queryParams.append('search', debouncedSearch);
       
       const response = await api.get(`/events?${queryParams.toString()}`);
-      const userId = user?.id;
       
-      let filteredData = response.data.data;
-      if (category === 'hosting') {
-        // Events where I am the host
-        filteredData = filteredData.filter((e: any) => e.host_id === userId);
-      } else if (category === 'attending') {
-        // Events where I have an RSVP but I'm NOT the host
-        filteredData = filteredData.filter((e: any) => e.host_id !== userId);
-      }
-
-      setEvents(filteredData);
+      setEvents(response.data.data);
       setTotalPages(response.data.data.length === limit ? page + 1 : page);
     } catch (error) {
       console.error('Failed to fetch events', error);

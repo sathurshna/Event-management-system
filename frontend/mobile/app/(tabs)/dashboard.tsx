@@ -18,7 +18,7 @@ export default function Dashboard() {
   const fetchEvents = async () => {
     try {
       // Fetch user's events
-      const response = await api.get('/events?limit=20');
+      const response = await api.get(`/events?limit=20&category=${category}`);
       setEvents(response.data.data);
     } catch (error) {
       console.log('Failed to fetch events', error);
@@ -31,7 +31,7 @@ export default function Dashboard() {
   useFocusEffect(
     useCallback(() => {
       fetchEvents();
-    }, [])
+    }, [category])
   );
 
   const onRefresh = useCallback(() => {
@@ -82,13 +82,6 @@ export default function Dashboard() {
     </View>
   );
 
-  let filteredEvents = events;
-  if (category === 'hosting') {
-    filteredEvents = events.filter(e => e.host_id === user?.id);
-  } else if (category === 'attending') {
-    filteredEvents = events.filter(e => e.host_id !== user?.id);
-  }
-
   return (
     <View style={[globalStyles.container, { paddingTop: 60 }]}>
       {loading && !refreshing ? (
@@ -97,7 +90,7 @@ export default function Dashboard() {
         </View>
       ) : (
         <FlatList
-          data={filteredEvents}
+          data={events}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <EventCard {...item} />}
           ListHeaderComponent={renderHeader}

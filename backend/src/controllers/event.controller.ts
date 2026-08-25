@@ -37,15 +37,24 @@ export const createEvent = catchAsync(async (req: Request, res: Response) => {
 
 // ─── Helper for Pagination & Search ───────────────────────────────────────────
 const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, hostId?: string) => {
-  const { search, date, visibility, page = '1', limit = '10' } = queryParams;
+  const { search, date, visibility, page = '1', limit = '10', category = 'all' } = queryParams;
   const conditions: string[] = [];
   const values: any[] = [];
 
   if (isPublic) {
     conditions.push('e.is_public = 1');
   } else if (hostId) {
-    conditions.push(`(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING'))`);
-    values.push(hostId, hostId);
+    if (category === 'hosting') {
+      conditions.push('e.host_id = ?');
+      values.push(hostId);
+    } else if (category === 'attending') {
+      conditions.push(`(e.host_id != ? AND EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ?))`);
+      values.push(hostId, hostId);
+    } else {
+      // Default to 'all'
+      conditions.push(`(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ?))`);
+      values.push(hostId, hostId);
+    }
   }
 
   if (search) {
