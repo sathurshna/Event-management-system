@@ -5,6 +5,13 @@ The Eventra backend provides a RESTful API built with Express.js. All responses 
 ## Base URL
 Local Development: `http://localhost:4000/api`
 
+## Testing via Postman
+All API endpoints have been rigorously tested using **Postman**. 
+You can find the exported Postman collections and environment variables in the `/postman` folder at the root of the repository. To test the API yourself:
+1. Import the collection file into your Postman workspace.
+2. Log in via the `/auth/login` endpoint to receive a JWT.
+3. Set the JWT token in your Postman environment variables or Authorization headers to access protected routes.
+
 ## Authentication
 Most endpoints require authentication. Pass the JWT access token in the `Authorization` header:
 ```http
