@@ -14,7 +14,7 @@ export const createInvitation = async (
   try {
     const eventId = req.params.id;
     const inviterId = req.user!.userId;
-    const { email } = req.body;
+    const { email, force } = req.body;
 
     // Check if event exists and if user is the host
     const [events] = await pool.execute<RowDataPacket[]>('SELECT host_id, title FROM events WHERE id = ?', [eventId]);
@@ -34,16 +34,32 @@ export const createInvitation = async (
 
     // Check if already invited
     const [existing] = await pool.execute<RowDataPacket[]>(
-      'SELECT id, token FROM invitations WHERE event_id = ? AND email = ?',
+      'SELECT id, token, accepted, declined FROM invitations WHERE event_id = ? AND email = ?',
       [eventId, email]
     );
 
     let token = '';
     let isResend = false;
+    let previousResponse = '';
 
     if (existing.length > 0) {
+      if (!force) {
+        return res.status(409).json({ success: false, message: 'This guest is already invited. Are you sure you want to send the invitation again?', requiresConfirmation: true });
+      }
+
       token = existing[0].token;
       isResend = true;
+
+      if (existing[0].accepted) previousResponse = 'Accepted';
+      else if (existing[0].declined) previousResponse = 'Declined';
+
+      // Reset their response if they had already answered, allowing them to change their mind
+      if (existing[0].accepted || existing[0].declined) {
+        await pool.execute(
+          'UPDATE invitations SET accepted = false, declined = false, note = NULL WHERE id = ?',
+          [existing[0].id]
+        );
+      }
     } else {
       const id = uuidv4();
       token = crypto.randomBytes(32).toString('hex');
@@ -62,9 +78,15 @@ export const createInvitation = async (
     if (invitedUsers.length > 0) {
       const invitedUserId = invitedUsers[0].id;
       const notificationId = uuidv4();
+
+      let message = `${inviterName} ${isResend ? 'reminded you about the invite to' : 'invited you to'} ${eventTitle}`;
+      if (previousResponse) {
+        message = `${eventTitle}: ${inviterName} invited you again.`;
+      }
+
       await pool.execute(
         'INSERT INTO notifications (id, type, message, link, user_id) VALUES (?, ?, ?, ?, ?)',
-        [notificationId, 'EVENT_INVITE', `${inviterName} ${isResend ? 'reminded you about the invite to' : 'invited you to'} ${eventTitle}`, inviteLink, invitedUserId]
+        [notificationId, 'EVENT_INVITE', message, inviteLink, invitedUserId]
       );
     }
 
@@ -87,7 +109,7 @@ export const getInvitationInfo = async (
     const { token } = req.params;
 
     const [invites] = await pool.execute<RowDataPacket[]>(
-      `SELECT i.id, i.email, i.accepted, i.declined, e.title, e.date, e.location, u.name as inviter_name 
+      `SELECT i.id, i.email, i.accepted, i.declined, i.event_id, e.title, e.date, e.location, u.name as inviter_name 
        FROM invitations i
        JOIN events e ON i.event_id = e.id
        JOIN users u ON i.inviter_id = u.id

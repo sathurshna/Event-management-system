@@ -70,8 +70,11 @@ const InviteAccept: React.FC = () => {
   if (invite?.accepted || invite?.declined) {
     return (
       <div className="flex-center" style={{ height: '100vh', flexDirection: 'column' }}>
-        <h2>You've already responded to this invitation!</h2>
-        <button onClick={() => navigate('/')} className="btn-primary" style={{ marginTop: '24px' }}>Go Home</button>
+        <h2>You've already responded!</h2>
+        <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
+          <button onClick={() => navigate('/')} style={{ padding: '12px 24px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'transparent', color: 'var(--text-main)', cursor: 'pointer', fontWeight: 600 }}>Go Home</button>
+          <button onClick={() => navigate(`/events/${invite.event_id}`)} className="btn-primary">View Event Details</button>
+        </div>
       </div>
     );
   }

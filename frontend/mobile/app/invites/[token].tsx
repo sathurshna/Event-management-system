@@ -76,12 +76,20 @@ export default function InviteAcceptMobile() {
   if (invite?.accepted || invite?.declined) {
     return (
       <View style={[globalStyles.container, { justifyContent: 'center', padding: spacing.xl }]}>
-        <Text style={{ color: colors.textMain, fontSize: 20, fontWeight: 'bold', marginBottom: 24, textAlign: 'center' }}>
-          You've already responded to this invitation!
+        <Text style={{ color: colors.textMain, fontSize: 24, fontWeight: 'bold', marginBottom: 32, textAlign: 'center' }}>
+          You've already responded!
         </Text>
-        <TouchableOpacity onPress={() => router.replace('/(tabs)/dashboard')} style={globalStyles.button}>
-          <Text style={globalStyles.buttonText}>Go Home</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'column', gap: 16 }}>
+          <TouchableOpacity onPress={() => router.replace(`/(tabs)/event/${invite.event_id}`)} style={globalStyles.button}>
+            <Text style={globalStyles.buttonText}>View Event Details</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => router.replace('/(tabs)/dashboard')} 
+            style={{ padding: 16, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.border, alignItems: 'center' }}
+          >
+            <Text style={{ color: colors.textMain, fontWeight: 'bold' }}>Go Home</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

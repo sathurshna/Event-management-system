@@ -90,6 +90,7 @@ export const invitationSchema = z.object({
     .email('Please provide a valid email address')
     .toLowerCase()
     .trim(),
+  force: z.boolean().optional(),
 });
 
 // ─── TypeScript Types from Schemas ────────────────────────────────────────────
