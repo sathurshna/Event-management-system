@@ -1,6 +1,6 @@
 <div align="center">
   
-# 🗓️ Event Management System
+# 🗓️ Eventra
 
 A modern, full-stack event management platform supporting beautiful Web and Mobile client applications. Plan, host, discover, and RSVP to events with ease!
 
