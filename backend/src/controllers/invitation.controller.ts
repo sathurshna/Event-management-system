@@ -34,21 +34,25 @@ export const createInvitation = async (
 
     // Check if already invited
     const [existing] = await pool.execute<RowDataPacket[]>(
-      'SELECT id FROM invitations WHERE event_id = ? AND email = ?',
+      'SELECT id, token FROM invitations WHERE event_id = ? AND email = ?',
       [eventId, email]
     );
 
+    let token = '';
+    let isResend = false;
+
     if (existing.length > 0) {
-      return res.status(400).json({ success: false, message: 'User is already invited' });
+      token = existing[0].token;
+      isResend = true;
+    } else {
+      const id = uuidv4();
+      token = crypto.randomBytes(32).toString('hex');
+
+      await pool.execute(
+        'INSERT INTO invitations (id, email, token, event_id, inviter_id) VALUES (?, ?, ?, ?, ?)',
+        [id, email, token, eventId, inviterId]
+      );
     }
-
-    const id = uuidv4();
-    const token = crypto.randomBytes(32).toString('hex');
-
-    await pool.execute(
-      'INSERT INTO invitations (id, email, token, event_id, inviter_id) VALUES (?, ?, ?, ?, ?)',
-      [id, email, token, eventId, inviterId]
-    );
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
     const inviteLink = `${clientUrl}/invites/${token}`;
@@ -60,7 +64,7 @@ export const createInvitation = async (
       const notificationId = uuidv4();
       await pool.execute(
         'INSERT INTO notifications (id, type, message, link, user_id) VALUES (?, ?, ?, ?, ?)',
-        [notificationId, 'EVENT_INVITE', `${inviterName} invited you to ${eventTitle}`, inviteLink, invitedUserId]
+        [notificationId, 'EVENT_INVITE', `${inviterName} ${isResend ? 'reminded you about the invite to' : 'invited you to'} ${eventTitle}`, inviteLink, invitedUserId]
       );
     }
 
@@ -68,7 +72,7 @@ export const createInvitation = async (
     // We do not await this to avoid blocking the response, or we can await it if we want to ensure it sent
     await sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err));
 
-    res.status(201).json({ success: true, message: 'Invitation sent successfully', token });
+    res.status(201).json({ success: true, message: isResend ? 'Invitation resent successfully' : 'Invitation sent successfully', token });
   } catch (error) {
     next(error);
   }

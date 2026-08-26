@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Share } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Share, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { ArrowLeft, Calendar, MapPin, User, Share2, Mail, Edit } from 'lucide-react-native';
+import { ArrowLeft, Calendar, MapPin, User, Share2, Mail, Edit, Globe, Lock, Trash2 } from 'lucide-react-native';
 import api from '../../../src/utils/api';
 import { globalStyles, colors, spacing } from '../../../src/theme';
 import { useAuth } from '../../../src/context/AuthContext';
@@ -45,6 +45,40 @@ export default function EventDetail() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const toggleVisibility = async () => {
+    if (!isOwner) return;
+    try {
+      await api.put(`/events/${id}`, { isPublic: !event.is_public });
+      setEvent((prev: any) => ({ ...prev, is_public: !prev.is_public }));
+      alert(event.is_public ? 'Event is now private' : 'Event is now public');
+    } catch (error) {
+      alert('Failed to update event visibility');
+    }
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Event",
+      `Are you sure you want to delete "${event?.title}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/events/${id}`);
+              alert('Event deleted successfully');
+              router.replace('/(tabs)');
+            } catch (error) {
+              alert('Failed to delete event');
+            }
+          }
+        }
+      ]
+    );
   };
 
   if (loading) {
@@ -100,6 +134,23 @@ export default function EventDetail() {
           >
             <Share2 color="white" size={24} />
           </TouchableOpacity>
+
+          {/* Visibility Toggle Badge Overlay */}
+          <TouchableOpacity
+            onPress={toggleVisibility}
+            disabled={!isOwner}
+            style={{
+              position: 'absolute', top: 50, right: 75,
+              backgroundColor: event.is_public ? colors.secondary : colors.primary,
+              paddingHorizontal: 16, paddingVertical: 12, borderRadius: 100,
+              flexDirection: 'row', alignItems: 'center'
+            }}
+          >
+            {event.is_public ? <Globe color="white" size={16} /> : <Lock color="white" size={16} />}
+            <Text style={{ color: 'white', fontWeight: 'bold', marginLeft: 6 }}>
+              {event.is_public ? 'Public' : 'Private'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Content Area */}
@@ -122,6 +173,13 @@ export default function EventDetail() {
                 >
                   <Mail color="white" size={16} style={{ marginRight: 6 }} />
                   <Text style={{ color: 'white', fontWeight: 'bold' }}>Invite</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  onPress={handleDelete}
+                  style={{ backgroundColor: '#ef4444', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
+                >
+                  <Trash2 color="white" size={16} />
                 </TouchableOpacity>
               </View>
             )}
