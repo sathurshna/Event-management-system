@@ -61,3 +61,35 @@ export const sendInvitationEmail = async (toEmail: string, inviterName: string, 
     throw new Error('Failed to send email');
   }
 };
+
+export const sendReminderEmail = async (toEmail: string, eventTitle: string, eventLink: string) => {
+  try {
+    const tp = await createTransporter();
+    
+    const info = await tp.sendMail({
+      from: '"Event Management App" <noreply@events.com>',
+      to: toEmail,
+      subject: `Reminder: ${eventTitle} is happening tomorrow!`,
+      text: `This is a reminder that the event "${eventTitle}" is happening tomorrow!\nClick here to view the event: ${eventLink}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
+          <h2>Event Reminder!</h2>
+          <p>This is a quick reminder that <strong>${eventTitle}</strong> is happening tomorrow.</p>
+          <div style="margin: 30px 0;">
+            <a href="${eventLink}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+              View Event
+            </a>
+          </div>
+          <p style="color: #6B7280; font-size: 14px;">If the button doesn't work, copy and paste this link into your browser: <br/> ${eventLink}</p>
+        </div>
+      `
+    });
+
+    console.log('✉️ Reminder Email sent: %s', info.messageId);
+    console.log('🔗 Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    return info;
+  } catch (error) {
+    console.error('Error sending reminder email:', error);
+    throw new Error('Failed to send reminder email');
+  }
+};

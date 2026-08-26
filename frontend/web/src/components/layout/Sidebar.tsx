@@ -10,6 +10,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
+    { name: 'Calendar', path: '/calendar', icon: <CalendarDays size={20} /> },
     { name: 'My Events', path: '/events', icon: <CalendarDays size={20} /> },
     { name: 'Create Event', path: '/events/create', icon: <CalendarPlus size={20} /> },
     { name: 'Discover', path: '/discover', icon: <Compass size={20} /> },
