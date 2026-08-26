@@ -14,8 +14,6 @@ dist/
 out/
 build/
 
-# Prisma
-backend/prisma/migrations/
 
 # Uploads
 backend/uploads/

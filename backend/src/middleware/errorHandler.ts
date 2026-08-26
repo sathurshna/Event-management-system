@@ -41,13 +41,6 @@ export const errorHandler = (
     });
   }
 
-  // Prisma unique constraint violations
-  if ((err as any).code === 'P2002') {
-    return res.status(409).json({
-      success: false,
-      message: 'A record with this value already exists.',
-    });
-  }
 
   // JWT errors
   if (err.name === 'JsonWebTokenError') {
