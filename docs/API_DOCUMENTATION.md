@@ -36,10 +36,12 @@ Authenticates a user.
 
 ## 2. Events (`/api/events`)
 
+### `GET /events/public`
+Retrieves a list of all public events (used for the Dashboard discovery view).
+
 ### `GET /events`
-Retrieves a list of events. Supports query parameters for filtering.
-- **Query `?category=all`**: Returns all public events (used for the Dashboard).
-- **Query `?category=calendar`**: Returns only events the authenticated user is hosting or attending (used for the Calendar view).
+Retrieves only the events the authenticated user is currently hosting or attending (used for the Calendar view).
+Requires Auth.
 - **Returns:** Array of Event objects.
 
 ### `POST /events`
@@ -54,9 +56,10 @@ Retrieves detailed information for a specific event, including host details.
 
 ## 3. RSVPs (`/api/rsvps`)
 
-### `POST /rsvps`
-RSVPs to an event. Requires Auth.
-- **Body:** `{ "eventId": "uuid-here", "status": "ATTENDING", "note": "Can't wait!" }`
+### `POST /events/:id/rsvp`
+RSVPs to a specific event. Requires Auth.
+- **URL Parameter:** `id` = UUID of the event.
+- **Body:** `{ "status": "ATTENDING", "note": "Can't wait!" }`
 - **Returns:** Created or updated RSVP record.
 
 ---
