@@ -12,6 +12,8 @@ interface InviteModalProps {
 const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, eventId }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [requiresConfirmation, setRequiresConfirmation] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
 
   if (!isOpen) return null;
 
@@ -21,15 +23,28 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, eventId }) =
 
     setLoading(true);
     try {
-      await api.post(`/events/${eventId}/invites`, { email });
+      await api.post(`/events/${eventId}/invites`, { email, force: requiresConfirmation });
       toast.success(`Invitation sent to ${email}`);
       setEmail('');
+      setRequiresConfirmation(false);
+      setConfirmationMessage('');
       onClose();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send invitation');
+      if (error.response?.data?.requiresConfirmation) {
+        setRequiresConfirmation(true);
+        setConfirmationMessage(error.response.data.message);
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to send invitation');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setRequiresConfirmation(false);
+    setConfirmationMessage('');
   };
 
   return (
@@ -66,7 +81,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, eventId }) =
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder="friend@example.com"
                 className="input-field"
                 style={{ paddingLeft: '40px' }}
@@ -74,8 +89,14 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, eventId }) =
             </div>
           </div>
           
-          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%' }}>
-            {loading ? 'Sending...' : 'Send Invitation'}
+          {requiresConfirmation && (
+            <div style={{ marginBottom: '20px', padding: '12px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '8px', fontSize: '0.875rem' }}>
+              {confirmationMessage}
+            </div>
+          )}
+
+          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', backgroundColor: requiresConfirmation ? '#ef4444' : undefined }}>
+            {loading ? 'Sending...' : (requiresConfirmation ? 'Yes, send again' : 'Send Invitation')}
           </button>
         </form>
       </div>

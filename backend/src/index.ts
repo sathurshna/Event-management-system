@@ -43,6 +43,10 @@ app.use('/api/invites', invitationRoutes);
 // ─── Global Error Handler ─────────────────────────────────────────────────────
 app.use(errorHandler);
 
+// ─── Cron Jobs ────────────────────────────────────────────────────────────────
+import { initCronJobs } from './cron/reminders';
+initCronJobs();
+
 // ─── Start Server ─────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

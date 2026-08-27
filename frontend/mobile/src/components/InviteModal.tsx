@@ -13,21 +13,35 @@ interface InviteModalProps {
 export default function InviteModal({ isVisible, onClose, eventId }: InviteModalProps) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [requiresConfirmation, setRequiresConfirmation] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
 
   const handleInvite = async () => {
     if (!email) return;
     setLoading(true);
     try {
-      await api.post(`/events/${eventId}/invites`, { email });
-      // In a real app we'd use Toast or Alert
+      await api.post(`/events/${eventId}/invites`, { email, force: requiresConfirmation });
       alert(`Invitation sent to ${email}`);
       setEmail('');
+      setRequiresConfirmation(false);
+      setConfirmationMessage('');
       onClose();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to send invitation');
+      if (error.response?.data?.requiresConfirmation) {
+        setRequiresConfirmation(true);
+        setConfirmationMessage(error.response.data.message);
+      } else {
+        alert(error.response?.data?.message || 'Failed to send invitation');
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    setRequiresConfirmation(false);
+    setConfirmationMessage('');
   };
 
   return (
@@ -53,19 +67,25 @@ export default function InviteModal({ isVisible, onClose, eventId }: InviteModal
                 placeholder="friend@example.com"
                 placeholderTextColor={colors.textMuted}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleEmailChange}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
             </View>
           </View>
 
+          {requiresConfirmation && (
+            <View style={{ marginBottom: spacing.lg, padding: spacing.md, backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 8 }}>
+              <Text style={{ color: '#ef4444', fontSize: 14 }}>{confirmationMessage}</Text>
+            </View>
+          )}
+
           <TouchableOpacity 
             onPress={handleInvite} 
             disabled={loading}
-            style={globalStyles.button}
+            style={[globalStyles.button, requiresConfirmation ? { backgroundColor: '#ef4444' } : {}]}
           >
-            {loading ? <ActivityIndicator color="white" /> : <Text style={globalStyles.buttonText}>Send Invitation</Text>}
+            {loading ? <ActivityIndicator color="white" /> : <Text style={globalStyles.buttonText}>{requiresConfirmation ? 'Yes, send again' : 'Send Invitation'}</Text>}
           </TouchableOpacity>
         </View>
       </View>

@@ -13,6 +13,7 @@ import EditEvent from './pages/EditEvent';
 import EventDetail from './pages/EventDetail';
 import InviteAccept from './pages/InviteAccept';
 import NotificationsPage from './pages/NotificationsPage';
+import CalendarView from './pages/CalendarView';
 
 import './index.css';
 
@@ -36,6 +37,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/discover" element={<div>Discover Page (Coming Soon)</div>} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/calendar" element={<CalendarView />} />
           <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
           <Route path="/events" element={<EventsList />} />
           <Route path="/events/create" element={<CreateEvent />} />

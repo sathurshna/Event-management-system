@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Bell, Plus } from 'lucide-react-native';
+import { Home, Bell, Plus, CalendarDays } from 'lucide-react-native';
 import { colors } from '../../src/theme';
 import NotificationBell from '../../src/components/NotificationBell';
 
@@ -21,6 +21,14 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color }) => <Home color={color} size={24} />,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          title: 'Calendar',
+          tabBarIcon: ({ color }) => <CalendarDays color={color} size={24} />,
           headerShown: false,
         }}
       />

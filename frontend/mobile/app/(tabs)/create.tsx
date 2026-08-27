@@ -2,18 +2,29 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert, Platform, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Camera, X } from 'lucide-react-native';
 import { globalStyles, colors, spacing, borderRadius } from '../../src/theme';
 import api from '../../src/utils/api';
 
 export default function CreateEventMobile() {
   const router = useRouter();
+  const { date } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
+  
+  // Parse date param if provided safely to avoid timezone offset issues
+  let initialDate = new Date();
+  if (date && typeof date === 'string') {
+    const parts = date.split('-');
+    if (parts.length === 3) {
+      initialDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    }
+  }
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    date: new Date(),
+    date: initialDate,
     location: '',
     isPublic: false,
     coverImage: null as string | null,

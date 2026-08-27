@@ -50,8 +50,12 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, host
     } else if (category === 'attending') {
       conditions.push(`(e.host_id != ? AND EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING'))`);
       values.push(hostId, hostId);
+    } else if (category === 'calendar') {
+      // Calendar view: strictly personal (hosting or active RSVP)
+      conditions.push(`(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status != 'DECLINED'))`);
+      values.push(hostId, hostId);
     } else {
-      // Default to 'all'
+      // Default to 'all' (Discovery view - includes all public events)
       conditions.push(`(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status != 'DECLINED'))`);
       values.push(hostId, hostId);
     }
