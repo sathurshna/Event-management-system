@@ -109,5 +109,7 @@ cd frontend/mobile
 npm install
 npx expo start
 ```
-> **Note on Expo SDK 57**: This project uses Expo SDK ~57. If your Expo Go app is outdated or does not support SDK 57, you may need to update the Expo Go app on your phone or run `npx expo update` to align versions.
+> **Note on Expo SDK 57**: This project requires Expo SDK 57. The standard App Store/Play Store Expo Go apps may not support it yet. 
+> - **Android**: Download the latest SDK 57 APK directly from [expo.dev/go](https://expo.dev/go).
+> - **iOS**: You must use an iOS Simulator (`npx expo start --ios`) or a custom Development Build, as custom SDKs cannot be sideloaded on physical iPhones.
 
