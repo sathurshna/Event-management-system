@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import { Mail, Lock, LogIn } from 'lucide-react-native';
 import { useAuth } from '../../src/context/AuthContext';
 import api from '../../src/utils/api';
-import { globalStyles, colors } from '../../src/theme';
+import { useTheme } from '../../src/context/ThemeContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,6 +12,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const { colors, globalStyles } = useTheme();
 
   const handleLogin = async () => {
     setLoading(true);

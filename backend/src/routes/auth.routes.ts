@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, refresh, logout, getMe } from '../controllers/auth.controller';
+import { register, login, refresh, logout, getMe, updateMe } from '../controllers/auth.controller';
 import { protect } from '../middleware/auth.middleware';
 import { validate, registerSchema, loginSchema } from '../middleware/validate';
 
@@ -13,5 +13,6 @@ router.post('/logout',                             logout);
 
 // Protected routes (requires valid access token)
 router.get('/me', protect, getMe);
+router.put('/me', protect, updateMe);
 
 export default router;

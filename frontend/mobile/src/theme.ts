@@ -1,16 +1,33 @@
-export const colors = {
-  background: '#0b0f19',
-  surface: '#1a1f2e',
-  surfaceGlass: 'rgba(26, 31, 46, 0.7)',
-  primary: '#6366f1',
-  primaryHover: '#4f46e5',
-  secondary: '#10b981',
-  textMain: '#f8fafc',
-  textMuted: '#94a3b8',
-  border: '#334155',
-  borderGlass: 'rgba(51, 65, 85, 0.5)',
-  error: '#ef4444',
+export const darkColors = {
+  background: '#080B12',
+  surface: '#151927',
+  surfaceSecondary: '#111521',
+  primary: '#6366F1',
+  primaryLight: '#818CF8',
+  textMain: '#F8FAFC',
+  textMuted: '#94A3B8',
+  border: '#252D40',
+  success: '#22C55E',
+  warning: '#F59E0B',
+  error: '#EF4444',
 };
+
+export const lightColors = {
+  background: '#F8FAFC',
+  surface: '#FFFFFF',
+  surfaceSecondary: '#F1F5F9',
+  primary: '#6366F1', // keep brand primary
+  primaryLight: '#818CF8',
+  textMain: '#0F172A',
+  textMuted: '#64748B',
+  border: '#E2E8F0',
+  success: '#22C55E',
+  warning: '#F59E0B',
+  error: '#EF4444',
+};
+
+// Fallback legacy export (will be removed as files are updated, but kept so TS doesn't immediately crash everything)
+export const colors = darkColors;
 
 export const spacing = {
   xs: 4,
@@ -27,16 +44,16 @@ export const borderRadius = {
   xl: 24,
 };
 
-// Global base styles that mimic the Web glassmorphism
-export const globalStyles = {
+// Factory function for styles
+export const createGlobalStyles = (themeColors: typeof darkColors) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
   glassCard: {
-    backgroundColor: colors.surfaceGlass,
+    backgroundColor: themeColors.surface,
     borderWidth: 1,
-    borderColor: colors.borderGlass,
+    borderColor: themeColors.border,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginHorizontal: spacing.lg,
@@ -44,9 +61,9 @@ export const globalStyles = {
   inputContainer: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+    backgroundColor: themeColors.surfaceSecondary,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: themeColors.border,
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.md,
     height: 50,
@@ -54,12 +71,12 @@ export const globalStyles = {
   },
   input: {
     flex: 1,
-    color: colors.textMain,
+    color: themeColors.textMain,
     marginLeft: spacing.sm,
     fontSize: 16,
   },
   button: {
-    backgroundColor: colors.primary,
+    backgroundColor: themeColors.primary,
     height: 50,
     borderRadius: borderRadius.md,
     justifyContent: 'center' as const,
@@ -68,9 +85,11 @@ export const globalStyles = {
     flexDirection: 'row' as const,
   },
   buttonText: {
-    color: 'white',
+    color: '#ffffff', // Button text is always white on primary blue
     fontSize: 16,
     fontWeight: '600' as const,
     marginLeft: spacing.sm,
   },
-};
+});
+
+export const globalStyles = createGlobalStyles(colors);

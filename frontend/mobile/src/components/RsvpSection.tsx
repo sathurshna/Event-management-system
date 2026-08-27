@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { User } from 'lucide-react-native';
 import api from '../utils/api';
-import { globalStyles, colors, spacing } from '../theme';
+import { spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface Attendee {
   rsvp_id: string;
@@ -20,14 +21,15 @@ interface RsvpSectionProps {
   hostId?: string;
 }
 
-const STATUS_CONFIG = {
-  ATTENDING: { label: "You're going! 🎉", color: colors.primary, bg: 'rgba(99,102,241,0.1)' },
-  MAYBE:     { label: "You might go 🤔",  color: '#f59e0b',      bg: 'rgba(245,158,11,0.1)' },
-  DECLINED:  { label: "You can't make it 😔", color: '#ef4444',  bg: 'rgba(239,68,68,0.1)' },
-};
-
-export default function RsvpSection({ eventId, isOwner, hostId }: RsvpSectionProps) {
+export default function RsvpSection({ eventId, isOwner = false, hostId }: RsvpSectionProps) {
   const { user } = useAuth();
+  const { colors, globalStyles } = useTheme();
+
+  const STATUS_CONFIG = {
+    ATTENDING: { label: "You're going! 🎉", color: colors.primary, bg: 'rgba(99,102,241,0.1)' },
+    MAYBE:     { label: "You might go 🤔",  color: '#f59e0b',      bg: 'rgba(245,158,11,0.1)' },
+    DECLINED:  { label: "Can't make it 😕", color: colors.error,   bg: 'rgba(239,68,68,0.1)' }
+  };
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [loading, setLoading] = useState(true);
   const [myRsvp, setMyRsvp] = useState<Attendee | null>(null);

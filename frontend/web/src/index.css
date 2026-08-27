@@ -3,14 +3,16 @@
   --bg-color: #0b0f19;
   --surface-color: #1a1f2e;
   --surface-color-glass: rgba(26, 31, 46, 0.7);
-  --primary-color: #6366f1; /* Indigo */
+  --primary-color: #6366f1;
+  /* Indigo */
   --primary-hover: #4f46e5;
-  --secondary-color: #10b981; /* Emerald */
+  --secondary-color: #10b981;
+  /* Emerald */
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --border-color: #334155;
   --border-color-glass: rgba(51, 65, 85, 0.5);
-  
+
   /* Utilities */
   --radius-md: 8px;
   --radius-lg: 16px;
@@ -32,7 +34,7 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  background-image: 
+  background-image:
     radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%),
     radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.08), transparent 25%);
 }
@@ -40,11 +42,38 @@ body {
 /* Glassmorphism Classes */
 .glass-panel {
   background: var(--surface-color-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color-glass);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), inset 0 0 20px rgba(255, 255, 255, 0.02);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.04);
+}
+
+/* Float Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }
 
 /* Form Elements */
@@ -109,7 +138,10 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: 700;
   letter-spacing: -0.025em;
   margin-bottom: 0.5em;
@@ -126,17 +158,28 @@ h1, h2, h3, h4 {
 }
 
 /* Layout & Sidebar */
-.desktop-only { display: none; }
-.mobile-only { display: inline-flex; }
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
+  display: inline-flex;
+}
 
 @media (min-width: 768px) {
-  .desktop-only { display: inline-flex; }
-  .mobile-only { display: none !important; }
-  
-  .layout-wrapper .main-content {
-    margin-left: 260px;
+  .desktop-only {
+    display: inline-flex;
   }
-  
+
+  .mobile-only {
+    display: none !important;
+  }
+
+  .layout-wrapper .main-content {
+    margin-left: 308px;
+    /* 260px width + 24px margin + 24px gap */
+  }
+
   .sidebar {
     transform: translateX(0) !important;
   }
@@ -144,8 +187,13 @@ h1, h2, h3, h4 {
 
 /* Animations */
 @keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
 .skeleton-shimmer {
@@ -160,7 +208,7 @@ h1, h2, h3, h4 {
   --fc-neutral-bg-color: var(--surface-color);
   --fc-neutral-text-color: var(--text-muted);
   --fc-border-color: var(--border-color-glass);
-  
+
   --fc-button-text-color: var(--text-main);
   --fc-button-bg-color: var(--surface-color);
   --fc-button-border-color: var(--border-color);
@@ -168,11 +216,11 @@ h1, h2, h3, h4 {
   --fc-button-hover-border-color: var(--primary-color);
   --fc-button-active-bg-color: var(--primary-color);
   --fc-button-active-border-color: var(--primary-color);
-  
+
   --fc-event-bg-color: var(--primary-color);
   --fc-event-border-color: transparent;
   --fc-event-text-color: #000;
-  
+
   --fc-today-bg-color: rgba(99, 102, 241, 0.1);
   --fc-list-event-hover-bg-color: rgba(255, 255, 255, 0.05);
 }
@@ -227,7 +275,8 @@ h1, h2, h3, h4 {
   background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-.fc-event-title, .fc-event-time {
+.fc-event-title,
+.fc-event-time {
   color: var(--text-main) !important;
   font-weight: 500;
   font-size: 0.85rem;

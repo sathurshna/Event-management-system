@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import { Mail, X } from 'lucide-react-native';
 import api from '../utils/api';
-import { globalStyles, colors, spacing } from '../theme';
+import { spacing } from '../theme';
+import { useTheme } from '../context/ThemeContext';
 
 interface InviteModalProps {
   isVisible: boolean;
@@ -11,6 +12,7 @@ interface InviteModalProps {
 }
 
 export default function InviteModal({ isVisible, onClose, eventId }: InviteModalProps) {
+  const { colors, globalStyles } = useTheme();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [requiresConfirmation, setRequiresConfirmation] = useState(false);

@@ -19,29 +19,40 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
 
   return (
     <div 
-      className="glass-panel" 
+      className="glass-panel event-card-wrapper" 
       style={{ 
         overflow: 'hidden', 
         display: 'flex', 
         flexDirection: 'column',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-        cursor: onClick ? 'pointer' : 'default'
+        cursor: onClick ? 'pointer' : 'default',
+        position: 'relative'
       }}
       onClick={onClick}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = 'var(--shadow-glow)';
+        const img = e.currentTarget.querySelector('.event-card-img') as HTMLElement;
+        if (img) img.style.transform = 'scale(1.05)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+        const img = e.currentTarget.querySelector('.event-card-img') as HTMLElement;
+        if (img) img.style.transform = 'scale(1)';
       }}
     >
-      <div style={{ position: 'relative', height: '200px', backgroundColor: 'var(--border-color)' }}>
+      <div style={{ position: 'relative', height: '220px', backgroundColor: 'var(--border-color)', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, transparent 100%)',
+          zIndex: 1,
+          transition: 'opacity 0.3s ease',
+        }} />
         {cover_image ? (
-          <img src={cover_image} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img 
+            src={cover_image} 
+            alt={title} 
+            className="event-card-img"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} 
+          />
         ) : (
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+          <div className="event-card-img" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', background: 'linear-gradient(45deg, var(--surface-color), #2a3441)', transition: 'transform 0.5s ease' }}>
             No Image
           </div>
         )}

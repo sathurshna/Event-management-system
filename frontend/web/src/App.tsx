@@ -6,7 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+import SettingsPage from './pages/SettingsPage';
+import Profile from './pages/Profile';
 import EventsList from './pages/EventsList';
 import CreateEvent from './pages/CreateEvent';
 import EditEvent from './pages/EditEvent';
@@ -31,15 +32,14 @@ const AppRoutes = () => {
       <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
       <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
       <Route path="/invites/:token" element={<InviteAccept />} />
-      
+
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/discover" element={<div>Discover Page (Coming Soon)</div>} />
+          <Route path="/" element={<EventsList />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/calendar" element={<CalendarView />} />
-          <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
-          <Route path="/events" element={<EventsList />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/events/:id/edit" element={<EditEvent />} />
@@ -54,7 +54,7 @@ function App() {
     <AuthProvider>
       <Router>
         <AppRoutes />
-        <Toaster 
+        <Toaster
           position="bottom-center"
           toastOptions={{
             style: {

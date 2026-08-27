@@ -141,3 +141,38 @@ export const getMe = catchAsync(async (req: Request, res: Response) => {
     }
   });
 });
+// ─── Update Current User Profile ─────────────────────────────────────────────
+export const updateMe = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user!.userId;
+  const { name, avatar } = req.body;
+
+  if (!name) {
+    throw new AppError('Name is required', 400);
+  }
+
+  // Update user in database
+  if (avatar) {
+    await pool.query(
+      'UPDATE users SET name = ?, avatar = ? WHERE id = ?',
+      [name, avatar, userId]
+    );
+  } else {
+    await pool.query(
+      'UPDATE users SET name = ? WHERE id = ?',
+      [name, userId]
+    );
+  }
+
+  // Fetch updated user
+  const [users] = await pool.query<RowDataPacket[]>(
+    'SELECT id, name, email, avatar, created_at, updated_at FROM users WHERE id = ?',
+    [userId]
+  );
+
+  res.status(200).json({
+    success: true,
+    data: {
+      user: users[0],
+    },
+  });
+});
