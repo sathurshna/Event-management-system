@@ -90,3 +90,4 @@ npx expo start
 ## 5. Troubleshooting 
 - **ECONNREFUSED on Mobile**: If the mobile app fails to connect to the backend, ensure your phone and computer are on the exact same Wi-Fi network. You may need to change API URLs in the React Native source code from `localhost:4000` to your computer's local IP address (e.g., `192.168.1.100:4000`).
 - **Database Errors**: If the backend throws ER_NO_SUCH_TABLE errors, ensure you successfully ran Step 2 and populated the schema.
+- **Expo SDK 57 Compatibility**: This project is built using Expo SDK ~57. If you get a "Version mismatch" or "SDK not supported" error when scanning the QR code, please ensure your physical device's Expo Go app is fully updated to the latest version via the App Store / Play Store.
