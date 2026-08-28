@@ -9,8 +9,13 @@
 node_modules/
 
 # Build outputs
-dist/
-.next/
+# Expo
+.expo/
+
+# Scratch and Test files
+backend/src/config/dummy_data.sql
+backend/test*.ts
+backend/test*.js
 out/
 build/
 
