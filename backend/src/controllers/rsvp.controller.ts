@@ -38,24 +38,27 @@ export const submitRsvp = async (
       );
     }
 
-    // Notify host if someone RSVPs 'yes' (ATTENDING) to a public event, and their status wasn't already ATTENDING
-    if (event.is_public === 1 && status === 'ATTENDING' && previousStatus !== 'ATTENDING' && userId !== event.host_id) {
+    // Notify host if someone changes their RSVP status on a public event
+    if (event.is_public === 1 && status !== previousStatus && userId !== event.host_id) {
       const [users] = await pool.execute<RowDataPacket[]>('SELECT name FROM users WHERE id = ?', [userId]);
       const userName = users[0]?.name || 'Someone';
       
+      let actionText = '';
+      if (status === 'ATTENDING') actionText = 'is attending';
+      else if (status === 'MAYBE') actionText = 'might attend';
+      else if (status === 'DECLINED') actionText = 'is no longer attending';
+      
       const notificationId = uuidv4();
-      const message = `${userName} is attending your public event: ${event.title}`;
+      const message = `${userName} ${actionText} your public event: ${event.title}`;
       
       await pool.execute(
         `INSERT INTO notifications (id, type, message, user_id, link) VALUES (?, 'RSVP_UPDATE', ?, ?, ?)`,
         [notificationId, message, event.host_id, `/events/${eventId}`]
       );
       
-      // Import dynamically or ensure it's imported at the top if possible. 
-      // Actually, we should import it at the top of the file.
       try {
         const { sendPushNotificationToUser } = require('../services/push.service');
-        await sendPushNotificationToUser(event.host_id, 'New RSVP!', message, { url: `/events/${eventId}` });
+        await sendPushNotificationToUser(event.host_id, 'RSVP Update', message, { url: `/events/${eventId}` });
       } catch (err) {
         console.error('Failed to send push notification:', err);
       }
