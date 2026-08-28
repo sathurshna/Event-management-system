@@ -162,8 +162,8 @@ const CalendarView: React.FC = () => {
 
       {/* Calendar Header with Title and Navigation */}
       <div style={{ padding: '24px 24px 0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '2rem', margin: 0, fontWeight: '700' }}>
-          {title.split(' ')[0]} <span style={{ fontWeight: 'normal', color: 'var(--text-muted)' }}>{title.split(' ')[1]}</span>
+        <h1 style={{ fontSize: '2.25rem', margin: 0, fontWeight: '800', letterSpacing: '-0.025em' }}>
+          <span style={{ background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{title.split(' ')[0]}</span> <span style={{ fontWeight: '400', color: 'var(--text-muted)' }}>{title.split(' ')[1]}</span>
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button onClick={() => navigateCalendar('prev')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -235,12 +235,14 @@ const CalendarView: React.FC = () => {
         bottom: 0,
         width: '100%',
         maxWidth: '400px',
-        backgroundColor: 'var(--surface-color)',
-        borderLeft: '1px solid var(--border-color)',
-        boxShadow: '-4px 0 15px rgba(0,0,0,0.3)',
+        backgroundColor: 'var(--surface-color-glass)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
+        boxShadow: '-10px 0 30px rgba(0,0,0,0.3)',
         zIndex: 50,
         transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.3s ease-in-out',
+        transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         display: 'flex',
         flexDirection: 'column'
       }}>

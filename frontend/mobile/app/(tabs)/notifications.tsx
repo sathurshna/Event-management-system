@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Check } from 'lucide-react-native';
+import { Check, Settings } from 'lucide-react-native';
 import api from '../../src/utils/api';
-import { globalStyles, colors, spacing } from '../../src/theme';
+import { spacing } from '../../src/theme';
+import { useTheme } from '../../src/context/ThemeContext';
 
 interface Notification {
   id: string;
@@ -18,7 +19,9 @@ export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('All');
   const router = useRouter();
+  const { colors, globalStyles } = useTheme();
 
   const fetchNotifications = async () => {
     try {
@@ -77,15 +80,50 @@ export default function NotificationsScreen() {
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  
+  const filteredNotifications = notifications.filter(n => {
+    if (activeFilter === 'Unread') return !n.is_read;
+    return true; // 'All'
+  });
 
   return (
     <View style={globalStyles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.lg, paddingBottom: spacing.md }}>
-        <Text style={{ color: colors.textMain, fontSize: 24, fontWeight: 'bold' }}>Notifications</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.lg, paddingBottom: spacing.sm }}>
+        <Text style={{ color: colors.textMain, fontSize: 28, fontWeight: 'bold' }}>Notifications</Text>
+        <TouchableOpacity style={{ padding: 8, backgroundColor: colors.surfaceSecondary, borderRadius: 100 }}>
+          <Settings color={colors.textMain} size={20} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.borderGlass }}>
+        {['All', 'Unread'].map((filter) => (
+          <TouchableOpacity
+            key={filter}
+            onPress={() => setActiveFilter(filter)}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 20,
+              backgroundColor: activeFilter === filter ? colors.surfaceSecondary : 'transparent',
+              borderWidth: 1,
+              borderColor: activeFilter === filter ? colors.primary : colors.borderGlass,
+            }}
+          >
+            <Text style={{
+              color: activeFilter === filter ? colors.primary : colors.textMuted,
+              fontWeight: activeFilter === filter ? 'bold' : '600'
+            }}>
+              {filter}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, alignItems: 'flex-end' }}>
         {unreadCount > 0 && (
           <TouchableOpacity onPress={markAllAsRead} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Check color={colors.primary} size={16} />
-            <Text style={{ color: colors.primary, marginLeft: 4, fontWeight: 'bold' }}>Mark all read</Text>
+            <Text style={{ color: colors.primary, marginLeft: 4, fontWeight: 'bold', fontSize: 12 }}>Mark all read</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -96,7 +134,7 @@ export default function NotificationsScreen() {
         </View>
       ) : (
         <FlatList
-          data={notifications}
+          data={filteredNotifications}
           keyExtractor={(item) => item.id}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
           contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
@@ -113,7 +151,7 @@ export default function NotificationsScreen() {
                 { 
                   marginBottom: spacing.md, 
                   marginHorizontal: 0,
-                  backgroundColor: item.is_read ? colors.surfaceGlass : 'rgba(99, 102, 241, 0.1)',
+                  backgroundColor: item.is_read ? colors.surface : colors.surfaceSecondary,
                   borderColor: item.is_read ? colors.borderGlass : colors.primary
                 }
               ]}

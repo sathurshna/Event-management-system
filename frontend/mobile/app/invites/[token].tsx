@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import api from '../../src/utils/api';
-import { globalStyles, colors, spacing, borderRadius } from '../../src/theme';
+import { spacing, borderRadius } from '../../src/theme';
+import { useTheme } from '../../src/context/ThemeContext';
 
 export default function InviteAcceptMobile() {
   const { token } = useLocalSearchParams();
   const router = useRouter();
+  const { colors, globalStyles } = useTheme();
   const [invite, setInvite] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
@@ -97,7 +99,7 @@ export default function InviteAcceptMobile() {
   return (
     <View style={[globalStyles.container, { justifyContent: 'center', padding: spacing.xl }]}>
       <View style={[globalStyles.glassCard, { padding: spacing.xl }]}>
-        <View style={{ width: 64, height: 64, backgroundColor: 'rgba(99, 102, 241, 0.1)', borderRadius: 32, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', marginBottom: spacing.lg }}>
+        <View style={{ width: 64, height: 64, backgroundColor: colors.surfaceSecondary, borderRadius: 32, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', marginBottom: spacing.lg }}>
           <Text style={{ fontSize: 32 }}>🎉</Text>
         </View>
         
@@ -108,7 +110,7 @@ export default function InviteAcceptMobile() {
           <Text style={{ fontWeight: 'bold', color: colors.textMain }}>{invite.inviter_name}</Text> has invited you to attend <Text style={{ fontWeight: 'bold', color: colors.textMain }}>{invite.title}</Text>.
         </Text>
 
-        <View style={{ backgroundColor: 'rgba(255,255,255,0.02)', padding: 16, borderRadius: borderRadius.md, marginBottom: 24 }}>
+        <View style={{ backgroundColor: colors.surfaceSecondary, padding: 16, borderRadius: borderRadius.md, marginBottom: 24 }}>
           <Text style={{ color: colors.textMain, marginBottom: 4 }}><Text style={{ color: colors.textMuted }}>Date:</Text> {new Date(invite.date).toLocaleDateString()}</Text>
           <Text style={{ color: colors.textMain }}><Text style={{ color: colors.textMuted }}>Location:</Text> {invite.location}</Text>
         </View>

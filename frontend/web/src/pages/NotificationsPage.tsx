@@ -15,6 +15,7 @@ interface Notification {
 const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('All');
   const navigate = useNavigate();
 
   const fetchNotifications = async () => {
@@ -63,20 +64,63 @@ const NotificationsPage: React.FC = () => {
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
+  const filteredNotifications = notifications.filter(n => {
+    if (activeFilter === 'Unread') return !n.is_read;
+    return true; // 'All'
+  });
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Notifications</h1>
-          <p className="text-muted">Stay updated on your invitations and RSVPs.</p>
+          <h1 style={{ fontSize: '2rem', margin: '0 0 16px 0', lineHeight: 1 }}>Notifications</h1>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {['All', 'Unread'].map(filter => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                style={{
+                  padding: '6px 16px',
+                  borderRadius: '20px',
+                  border: `1px solid ${activeFilter === filter ? 'var(--primary-color)' : 'var(--border-color)'}`,
+                  backgroundColor: activeFilter === filter ? 'var(--primary-color)' : 'transparent',
+                  color: activeFilter === filter ? 'white' : 'var(--text-muted)',
+                  cursor: 'pointer',
+                  fontWeight: activeFilter === filter ? 600 : 400,
+                  transition: 'all 0.2s'
+                }}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
+        
         {unreadCount > 0 && (
           <button 
             onClick={markAllAsRead}
-            className="btn-primary"
-            style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary-color)', border: 'none' }}
+            style={{ 
+              backgroundColor: 'transparent', 
+              color: 'var(--primary-color)', 
+              border: '1px solid var(--primary-color)',
+              borderRadius: '6px',
+              padding: '6px 16px',
+              fontSize: '14px',
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s',
+              gap: '6px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
-            <Check size={18} style={{ marginRight: '8px' }} /> Mark all read
+            <Check size={16} /> Mark as read
           </button>
         )}
       </div>
@@ -84,13 +128,13 @@ const NotificationsPage: React.FC = () => {
       <div className="glass-panel" style={{ overflow: 'hidden' }}>
         {loading ? (
           <div className="flex-center" style={{ padding: '64px' }}>Loading...</div>
-        ) : notifications.length === 0 ? (
+        ) : filteredNotifications.length === 0 ? (
           <div className="flex-center" style={{ padding: '64px', color: 'var(--text-muted)' }}>
-            You have no notifications yet.
+            You have no notifications in this view.
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {notifications.map(notif => (
+            {filteredNotifications.map(notif => (
               <div 
                 key={notif.id}
                 onClick={() => handleNotificationClick(notif)}

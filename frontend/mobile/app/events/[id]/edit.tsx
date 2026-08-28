@@ -4,12 +4,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Camera, X } from 'lucide-react-native';
-import { globalStyles, colors, spacing, borderRadius } from '../../../src/theme';
+import { spacing, borderRadius } from '../../../src/theme';
+import { useTheme } from '../../../src/context/ThemeContext';
 import api from '../../../src/utils/api';
 
 export default function EditEventMobile() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { colors, globalStyles } = useTheme();
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -127,13 +129,14 @@ export default function EditEventMobile() {
             style={{
               height: 180,
               borderRadius: borderRadius.lg,
+              borderRadius: borderRadius.md,
               borderWidth: 2,
               borderColor: colors.border,
               borderStyle: 'dashed',
               overflow: 'hidden',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: 'rgba(255,255,255,0.02)',
+              backgroundColor: colors.surface,
             }}
           >
             {formData.coverImage ? (
@@ -144,21 +147,21 @@ export default function EditEventMobile() {
                   resizeMode="cover"
                 />
                 {/* Overlay edit hint */}
-                <View style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: 10, borderRadius: borderRadius.md, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: borderRadius.md, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Camera color="white" size={18} />
                   <Text style={{ color: 'white', fontWeight: '600' }}>Change Image</Text>
                 </View>
                 {/* Remove button */}
                 <TouchableOpacity
                   onPress={() => handleChange('coverImage', null)}
-                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', padding: 6, borderRadius: 100 }}
+                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: colors.surfaceSecondary, padding: 6, borderRadius: 100 }}
                 >
                   <X color="white" size={16} />
                 </TouchableOpacity>
               </>
             ) : (
               <View style={{ alignItems: 'center', gap: 8 }}>
-                <View style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: 16, borderRadius: 100 }}>
+                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 16, borderRadius: 100 }}>
                   <Camera color={colors.primary} size={28} />
                 </View>
                 <Text style={{ color: colors.textMuted, fontSize: 14 }}>Tap to select a cover photo</Text>

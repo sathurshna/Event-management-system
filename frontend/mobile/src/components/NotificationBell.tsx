@@ -1,19 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import api from '../utils/api';
 import { colors } from '../theme';
 
 export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
+  
+  const prevUnreadCountRef = useRef(0);
+  const isInitialLoad = useRef(true);
 
   const fetchNotifications = async () => {
     try {
       const response = await api.get('/notifications');
       const unread = response.data.data.filter((n: any) => !n.is_read).length;
+      
+      if (!isInitialLoad.current && unread > prevUnreadCountRef.current) {
+        // Find the newest unread notification to show its message
+        const latestUnread = response.data.data.find((n: any) => !n.is_read);
+        if (latestUnread) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "New Notification",
+              body: latestUnread.message,
+              sound: true,
+            },
+            trigger: null,
+          });
+        }
+      }
+      
       setUnreadCount(unread);
+      prevUnreadCountRef.current = unread;
+      isInitialLoad.current = false;
+      
     } catch (error) {
       console.log('Failed to fetch notifications count', error);
     }

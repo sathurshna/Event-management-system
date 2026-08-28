@@ -3,14 +3,16 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIn
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Camera, X } from 'lucide-react-native';
-import { globalStyles, colors, spacing, borderRadius } from '../../src/theme';
+import { Camera, X, Calendar, Clock } from 'lucide-react-native';
+import { spacing, borderRadius } from '../../src/theme';
+import { useTheme } from '../../src/context/ThemeContext';
 import api from '../../src/utils/api';
 
 export default function CreateEventMobile() {
   const router = useRouter();
   const { date } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
+  const { colors, globalStyles } = useTheme();
   
   // Parse date param if provided safely to avoid timezone offset issues
   let initialDate = new Date();
@@ -105,13 +107,14 @@ export default function CreateEventMobile() {
             style={{
               height: 180,
               borderRadius: borderRadius.lg,
+              borderRadius: borderRadius.md,
               borderWidth: 2,
               borderColor: colors.border,
               borderStyle: 'dashed',
               overflow: 'hidden',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: 'rgba(255,255,255,0.02)',
+              backgroundColor: colors.surface,
             }}
           >
             {formData.coverImage ? (
@@ -121,20 +124,20 @@ export default function CreateEventMobile() {
                   style={{ width: '100%', height: '100%', position: 'absolute' }}
                   resizeMode="cover"
                 />
-                <View style={{ backgroundColor: 'rgba(0,0,0,0.4)', padding: 10, borderRadius: borderRadius.md, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: borderRadius.md, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Camera color="white" size={18} />
                   <Text style={{ color: 'white', fontWeight: '600' }}>Change Image</Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => handleChange('coverImage', null)}
-                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', padding: 6, borderRadius: 100 }}
+                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: colors.surfaceSecondary, padding: 6, borderRadius: 100 }}
                 >
                   <X color="white" size={16} />
                 </TouchableOpacity>
               </>
             ) : (
               <View style={{ alignItems: 'center', gap: 8 }}>
-                <View style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: 16, borderRadius: 100 }}>
+                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 16, borderRadius: 100 }}>
                   <Camera color={colors.primary} size={28} />
                 </View>
                 <Text style={{ color: colors.textMuted, fontSize: 14 }}>Tap to select a cover photo</Text>
@@ -164,23 +167,56 @@ export default function CreateEventMobile() {
             onChangeText={t => handleChange('description', t)}
           />
 
-          <View style={{ flexDirection: 'row', gap: spacing.md }}>
+          <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: spacing.sm }}>Date *</Text>
+              <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: 'bold', marginBottom: spacing.sm, letterSpacing: 1 }}>START DATE *</Text>
               <TouchableOpacity
-                style={globalStyles.inputContainer}
+                style={[globalStyles.inputContainer, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
                 onPress={() => setShowDatePicker(true)}
               >
-                <Text style={{ color: colors.textMain }}>{formData.date.toLocaleDateString()}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Calendar color={colors.textMuted} size={18} style={{ marginRight: 8 }} />
+                  <Text style={{ color: colors.textMain }}>{formData.date.toLocaleDateString()}</Text>
+                </View>
               </TouchableOpacity>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: spacing.sm }}>Time *</Text>
+              <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: 'bold', marginBottom: spacing.sm, letterSpacing: 1 }}>START TIME *</Text>
               <TouchableOpacity
-                style={globalStyles.inputContainer}
+                style={[globalStyles.inputContainer, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
                 onPress={() => setShowTimePicker(true)}
               >
-                <Text style={{ color: colors.textMain }}>{formData.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Clock color={colors.textMuted} size={18} style={{ marginRight: 8 }} />
+                  <Text style={{ color: colors.textMain }}>{formData.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: 'bold', marginBottom: spacing.sm, letterSpacing: 1 }}>END DATE</Text>
+              <TouchableOpacity
+                style={[globalStyles.inputContainer, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Calendar color={colors.textMuted} size={18} style={{ marginRight: 8 }} />
+                  <Text style={{ color: colors.textMain }}>{formData.date.toLocaleDateString()}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: 'bold', marginBottom: spacing.sm, letterSpacing: 1 }}>END TIME</Text>
+              <TouchableOpacity
+                style={[globalStyles.inputContainer, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+                onPress={() => setShowTimePicker(true)}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Clock color={colors.textMuted} size={18} style={{ marginRight: 8 }} />
+                  <Text style={{ color: colors.textMain }}>{formData.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </View>

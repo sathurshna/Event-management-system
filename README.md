@@ -110,3 +110,24 @@ npm install
 npx expo start
 ```
 
+---
+
+## 🚀 Future Improvements & Production Readiness
+
+While the current application is fully functional, moving to a production environment requires a few final setup steps:
+
+### 1. Real Email Integration (Nodemailer)
+The application is currently designed to use local/development configurations for the email service. For production, you must use a real authenticated SMTP provider (e.g. Gmail, SendGrid, Amazon SES) so that invites and reminders actually reach users' inboxes.
+
+**Gmail Example Setup:**
+Generate a 16-character [Google App Password](https://myaccount.google.com/) under Security > 2-Step Verification, then update the backend `.env`:
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=your_real_email@gmail.com
+SMTP_PASS=your_16_char_app_password
+```
+
+### 2. Expo Application Services (EAS) Setup
+Push notifications are currently delivered as local notifications in the simulator for testing. To send native push notifications over the air to real devices, link the Expo project to an EAS backend by running `eas init` in the mobile directory and providing a real `projectId` to the notification service.
+

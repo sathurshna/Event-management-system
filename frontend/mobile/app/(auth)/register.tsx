@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'reac
 import { Link, useRouter } from 'expo-router';
 import { Mail, Lock, UserPlus, User } from 'lucide-react-native';
 import api from '../../src/utils/api';
-import { globalStyles, colors } from '../../src/theme';
+import { useTheme } from '../../src/context/ThemeContext';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -12,6 +12,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { colors, globalStyles } = useTheme();
 
   const handleRegister = async () => {
     setLoading(true);

@@ -20,9 +20,9 @@ const getEventColor = (event: EventData) => {
   const eventDate = new Date(event.date);
   const now = new Date();
   
-  if (eventDate < now) return '#9ca3af'; // Bright Gray for past
-  if (event.is_public) return '#facc15'; // Yellow for public
-  return '#e879f9'; // Magenta for private
+  if (eventDate < now) return colors.textMuted; // Muted for past
+  if (event.is_public) return colors.success; // Green for public
+  return colors.primary; // Purple for private
 };
 
 const toDateString = (date: Date | string) => {
@@ -42,9 +42,9 @@ const CustomDay = ({ date, state, marking, onPress }: any) => {
       style={{
         width: 38,
         height: 38,
-        borderRadius: 19,
-        backgroundColor: isSelected ? 'rgba(255,255,255,0.15)' : 'transparent',
-        borderWidth: 0,
+        padding: 4,
+        backgroundColor: isSelected ? colors.surfaceSecondary : 'transparent',
+        borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
       }}
@@ -417,6 +417,10 @@ const styles = StyleSheet.create({
   yearItem: {
     paddingVertical: spacing.sm,
     alignItems: 'center',
+    backgroundColor: colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: spacing.md,
     borderRadius: borderRadius.md,
   },
   yearItemSelected: {
@@ -444,6 +448,13 @@ const styles = StyleSheet.create({
     color: colors.textMain,
     fontWeight: 'bold',
     fontSize: 13,
+  },
+  timeColumn: {
+    width: 60,
+    alignItems: 'center',
+    paddingVertical: 20,
+    borderRightWidth: 1,
+    borderRightColor: colors.border,
   },
   timelineDetailColumn: {
     flex: 1,

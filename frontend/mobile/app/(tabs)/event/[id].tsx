@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Share, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { ArrowLeft, Calendar, MapPin, User, Share2, Mail, Edit, Globe, Lock, Trash2 } from 'lucide-react-native';
+import { ArrowLeft, Calendar, MapPin, User, Users, Share2, Mail, Edit, Globe, Lock, Trash2 } from 'lucide-react-native';
 import api from '../../../src/utils/api';
-import { globalStyles, colors, spacing } from '../../../src/theme';
+import { spacing } from '../../../src/theme';
 import { useAuth } from '../../../src/context/AuthContext';
+import { useTheme } from '../../../src/context/ThemeContext';
 import RsvpSection from '../../../src/components/RsvpSection';
 import InviteModal from '../../../src/components/InviteModal';
 
@@ -12,6 +13,7 @@ export default function EventDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { colors, globalStyles } = useTheme();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isInviteModalOpen, setInviteModalOpen] = useState(false);
@@ -122,7 +124,7 @@ export default function EventDetail() {
           {/* Back Button Overlay */}
           <TouchableOpacity 
             onPress={() => router.back()}
-            style={{ position: 'absolute', top: 50, left: 16, backgroundColor: 'rgba(0,0,0,0.5)', padding: 12, borderRadius: 100 }}
+            style={{ position: 'absolute', top: 50, left: 16, backgroundColor: colors.surfaceSecondary, padding: 12, borderRadius: 100 }}
           >
             <ArrowLeft color="white" size={24} />
           </TouchableOpacity>
@@ -130,7 +132,7 @@ export default function EventDetail() {
           {/* Share Button Overlay */}
           <TouchableOpacity 
             onPress={handleShare}
-            style={{ position: 'absolute', top: 50, right: 16, backgroundColor: 'rgba(0,0,0,0.5)', padding: 12, borderRadius: 100 }}
+            style={{ position: 'absolute', top: 50, right: 16, backgroundColor: colors.surfaceSecondary, padding: 12, borderRadius: 100 }}
           >
             <Share2 color="white" size={24} />
           </TouchableOpacity>
@@ -161,8 +163,8 @@ export default function EventDetail() {
             {isOwner && (
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <TouchableOpacity 
-                  onPress={() => router.push(`/events/${id}/edit`)}
-                  style={{ backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
+                  onPress={() => router.push(`/(tabs)/events/${event.id}/edit` as any)}
+                  style={{ backgroundColor: colors.surfaceSecondary, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
                 >
                   <Edit color="white" size={16} />
                 </TouchableOpacity>
@@ -177,7 +179,7 @@ export default function EventDetail() {
 
                 <TouchableOpacity 
                   onPress={handleDelete}
-                  style={{ backgroundColor: '#ef4444', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
+                  style={{ backgroundColor: colors.error, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
                 >
                   <Trash2 color="white" size={16} />
                 </TouchableOpacity>
@@ -187,8 +189,8 @@ export default function EventDetail() {
 
           {/* Info Blocks */}
           <View style={[globalStyles.glassCard, { marginHorizontal: 0, marginBottom: spacing.xl, padding: spacing.md, gap: 16 }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: 10, borderRadius: 12, marginRight: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
+              <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: 12, marginRight: 16 }}>
                 <Calendar color={colors.primary} size={24} />
               </View>
               <View style={{ flex: 1 }}>
@@ -197,8 +199,8 @@ export default function EventDetail() {
               </View>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: 10, borderRadius: 12, marginRight: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
+              <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: 12, marginRight: 16 }}>
                 <MapPin color={colors.primary} size={24} />
               </View>
               <View style={{ flex: 1 }}>
@@ -207,9 +209,9 @@ export default function EventDetail() {
               </View>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', padding: 10, borderRadius: 12, marginRight: 16 }}>
-                <User color={colors.primary} size={24} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xl }}>
+              <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: 12, marginRight: 16 }}>
+                <Users color={colors.primary} size={24} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ color: colors.textMuted, fontSize: 12 }}>Hosted By</Text>

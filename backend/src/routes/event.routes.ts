@@ -7,7 +7,8 @@ import {
   getPublicEvents,
   getEventDetail,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  getMyStats
 } from '../controllers/event.controller';
 
 import { submitRsvp, getEventAttendees } from '../controllers/rsvp.controller';
@@ -35,6 +36,7 @@ const optionalAuth = (req: any, res: any, next: any) => {
   next();
 };
 
+router.get('/stats', protect, getMyStats);
 router.get('/:id', optionalAuth, getEventDetail);
 
 // Fully protected routes

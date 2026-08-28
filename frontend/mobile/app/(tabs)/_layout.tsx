@@ -1,25 +1,28 @@
 import { Tabs } from 'expo-router';
 import { Home, Bell, Plus, CalendarDays } from 'lucide-react-native';
-import { colors } from '../../src/theme';
-import NotificationBell from '../../src/components/NotificationBell';
+import { useTheme } from '../../src/context/ThemeContext';
 
 export default function TabLayout() {
+  const { colors } = useTheme();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-        },
+        tabBarShowLabel: true,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
+        tabBarStyle: {
+          backgroundColor: colors.surfaceSecondary,
+          borderTopColor: colors.border,
+          height: 60,
+          borderTopWidth: 1,
+        },
       }}
     >
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'Home',
           tabBarIcon: ({ color }) => <Home color={color} size={24} />,
           headerShown: false,
         }}
@@ -43,7 +46,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: 'Notifications',
+          title: 'Alerts',
           tabBarIcon: ({ color }) => <Bell color={color} size={24} />,
           headerShown: false,
         }}
