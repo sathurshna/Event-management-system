@@ -59,6 +59,16 @@ A modern, full-stack event management platform supporting beautiful Web and Mobi
 
 ---
 
+## 📚 Official Documentation
+For grading and in-depth review, please refer to our comprehensive documentation suite located in the `/docs` folder:
+- 📖 [User Guide & Feature Showcase](./docs/USER_GUIDE.md) - Full walkthrough of app features, UI flows, and capabilities.
+- 🏗️ [System Architecture](./docs/SYSTEM_ARCHITECTURE.md) - High-level system design and component interaction diagrams.
+- 🗄️ [Database Schema](./docs/DATABASE_SCHEMA.md) - ER diagrams and raw SQL architecture design.
+- 🔌 [API Documentation](./docs/API_DOCUMENTATION.md) - REST API routes, payloads, and Postman testing guide.
+- 🚀 [Developer Setup Guide](./docs/SETUP_GUIDE.md) - Step-by-step instructions for local initialization.
+
+---
+
 ## 🛠️ Quick Start Guide
 
 ### Prerequisites
@@ -109,6 +119,9 @@ cd frontend/mobile
 npm install
 npx expo start
 ```
+> **Note on Expo SDK 57**: This project requires Expo SDK 57. The standard App Store/Play Store Expo Go apps may not support it yet. 
+> - **Android**: Download the latest SDK 57 APK directly from [expo.dev/go](https://expo.dev/go).
+> - **iOS**: You must use an iOS Simulator (`npx expo start --ios`) or a custom Development Build, as custom SDKs cannot be sideloaded on physical iPhones.
 
 ---
 
