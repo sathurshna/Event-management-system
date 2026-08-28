@@ -74,6 +74,11 @@ mysql -u root -p -e "DROP DATABASE IF EXISTS event_management; CREATE DATABASE e
 mysql -u root -p event_management < src/config/schema.sql
 ```
 
+*(Optional)* Load the dummy seed data to populate your app with sample users, events, and RSVPs (all seed user passwords are `Password123!`):
+```bash
+mysql -u root -p event_management < src/config/seed.sql
+```
+
 ### 2. Configure Environment Variables
 Inside the `backend/` directory, create a `.env` file and configure your variables:
 ```env
