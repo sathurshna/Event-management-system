@@ -17,11 +17,49 @@ const NotificationsDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const prevUnreadCountRef = useRef(0);
+  const isInitialLoad = useRef(true);
+
+  const playChime = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1); // Slide up to A6
+      
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+      
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.5);
+    } catch (e) {
+      console.log('Audio chime not supported or blocked by browser', e);
+    }
+  };
 
   const fetchNotifications = async () => {
     try {
       const response = await api.get('/notifications');
-      setNotifications(response.data.data);
+      const notifs: Notification[] = response.data.data;
+      setNotifications(notifs);
+      
+      const unreadCount = notifs.filter(n => !n.is_read).length;
+      
+      if (!isInitialLoad.current && unreadCount > prevUnreadCountRef.current) {
+        playChime();
+      }
+      
+      prevUnreadCountRef.current = unreadCount;
+      isInitialLoad.current = false;
+      
     } catch (error) {
       console.error('Failed to fetch notifications', error);
     }

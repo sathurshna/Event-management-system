@@ -23,6 +23,23 @@ export default function EventCard({ id, title, description, date, location, cove
     weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
+  const isPast = new Date(date) < new Date();
+  let badgeColor = colors.primary;
+  let badgeText = '';
+  let badgeTextColor = '#ffffff';
+
+  if (isPast) {
+    badgeColor = '#4B5563'; // Gray
+    badgeText = 'Past';
+  } else if (is_public) {
+    badgeColor = '#EAB308'; // Yellow
+    badgeText = 'Public';
+    badgeTextColor = '#000000'; // Dark text for yellow
+  } else {
+    badgeColor = '#D946EF'; // Magenta
+    badgeText = 'Private';
+  }
+
   return (
     <TouchableOpacity 
       activeOpacity={0.8}
@@ -50,15 +67,15 @@ export default function EventCard({ id, title, description, date, location, cove
           </Text>
         </View>
 
-        {/* Public/Private Badge */}
-        {is_public !== undefined && (
+        {/* Event Status Badge */}
+        {(is_public !== undefined || isPast) && (
           <View style={{
             position: 'absolute', top: 12, right: 12,
-            backgroundColor: is_public ? colors.success : colors.primary,
+            backgroundColor: badgeColor,
             paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20
           }}>
-            <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: 'bold' }}>
-              {is_public ? 'Public' : 'Private'}
+            <Text style={{ color: badgeTextColor, fontSize: 12, fontWeight: 'bold' }}>
+              {badgeText}
             </Text>
           </View>
         )}

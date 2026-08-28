@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, MapPin, Moon } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [emailEnabled, setEmailEnabled] = useState(false);
+  const { user, updateUser } = useAuth();
+
+  const [pushEnabled, setPushEnabled] = useState(user?.push_enabled !== false);
+  const [emailEnabled, setEmailEnabled] = useState(user?.email_enabled !== false);
   const [locationEnabled, setLocationEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
 
@@ -11,6 +15,28 @@ export default function SettingsPage() {
     const isLight = document.body.classList.contains('light-mode');
     setDarkMode(!isLight);
   }, []);
+
+  const handleTogglePush = async () => {
+    const newVal = !pushEnabled;
+    setPushEnabled(newVal);
+    try {
+      await updateUser({ push_enabled: newVal });
+    } catch (e) {
+      setPushEnabled(!newVal);
+      toast.error('Failed to update push settings');
+    }
+  };
+
+  const handleToggleEmail = async () => {
+    const newVal = !emailEnabled;
+    setEmailEnabled(newVal);
+    try {
+      await updateUser({ email_enabled: newVal });
+    } catch (e) {
+      setEmailEnabled(!newVal);
+      toast.error('Failed to update email settings');
+    }
+  };
 
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -69,8 +95,8 @@ export default function SettingsPage() {
         <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: '16px', fontWeight: 700 }}>
           Notifications
         </h3>
-        {renderSettingRow(<Bell size={24} />, 'Push Notifications', pushEnabled, () => setPushEnabled(!pushEnabled))}
-        {renderSettingRow(<Bell size={24} opacity={0.6} />, 'Email Alerts', emailEnabled, () => setEmailEnabled(!emailEnabled))}
+        {renderSettingRow(<Bell size={24} />, 'Push Notifications', pushEnabled, handleTogglePush)}
+        {renderSettingRow(<Bell size={24} opacity={0.6} />, 'Email Alerts', emailEnabled, handleToggleEmail)}
       </div>
 
       <div style={{ marginBottom: '40px' }}>

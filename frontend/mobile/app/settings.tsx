@@ -5,14 +5,35 @@ import { ChevronLeft, Bell, MapPin, Moon, Shield, CircleHelp, Info } from 'lucid
 import { spacing } from '../src/theme';
 import { useTheme } from '../src/context/ThemeContext';
 
+import { useAuth } from '../src/context/AuthContext';
+
 export default function SettingsScreen() {
   const router = useRouter();
   const { theme, toggleTheme, colors, globalStyles } = useTheme();
+  const { user, updateUser } = useAuth();
   
-  // Local state for toggles
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [emailEnabled, setEmailEnabled] = useState(false);
+  // Local state for toggles (syncs with user context on mount)
+  const [pushEnabled, setPushEnabled] = useState(user?.push_enabled !== false);
+  const [emailEnabled, setEmailEnabled] = useState(user?.email_enabled !== false);
   const [locationEnabled, setLocationEnabled] = useState(true);
+
+  const handleTogglePush = async (val: boolean) => {
+    setPushEnabled(val);
+    try {
+      await updateUser({ push_enabled: val });
+    } catch (e) {
+      setPushEnabled(!val); // revert on error
+    }
+  };
+
+  const handleToggleEmail = async (val: boolean) => {
+    setEmailEnabled(val);
+    try {
+      await updateUser({ email_enabled: val });
+    } catch (e) {
+      setEmailEnabled(!val); // revert on error
+    }
+  };
 
   const renderSettingRow = (icon: any, title: string, value: boolean, onValueChange: (val: boolean) => void) => (
     <View style={{
@@ -51,8 +72,8 @@ export default function SettingsScreen() {
         <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: '700', letterSpacing: 1, marginBottom: 12, marginLeft: 4, marginTop: 8 }}>
           NOTIFICATIONS
         </Text>
-        {renderSettingRow(<Bell color={colors.textMain} size={22} />, 'Push Notifications', pushEnabled, setPushEnabled)}
-        {renderSettingRow(<Bell color={colors.textMain} size={22} opacity={0.6} />, 'Email Alerts', emailEnabled, setEmailEnabled)}
+        {renderSettingRow(<Bell color={colors.textMain} size={22} />, 'Push Notifications', pushEnabled, handleTogglePush)}
+        {renderSettingRow(<Bell color={colors.textMain} size={22} opacity={0.6} />, 'Email Alerts', emailEnabled, handleToggleEmail)}
 
         <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: '700', letterSpacing: 1, marginBottom: 12, marginLeft: 4, marginTop: 24 }}>
           PREFERENCES

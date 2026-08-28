@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { pool } from '../config/db';
 import { RowDataPacket } from 'mysql2';
-import { sendReminderEmail } from '../utils/email.utils';
+import { emailService } from '../services/email.service';
 import { v4 as uuidv4 } from 'uuid';
 
 export const initCronJobs = () => {
@@ -43,7 +43,7 @@ export const initCronJobs = () => {
 
         for (const attendee of attendees) {
           // Send Email
-          await sendReminderEmail(attendee.email, event.title, eventLink).catch(err => console.error("Failed to send reminder email", err));
+          await emailService.sendReminderEmail(attendee.email, event.title, eventLink).catch((err: any) => console.error("Failed to send reminder email", err));
 
           // Also create an in-app notification
           const notificationId = uuidv4();
@@ -58,6 +58,7 @@ export const initCronJobs = () => {
     } catch (error) {
       console.error('Error running event reminder cron job:', error);
     }
+
   }, {
     scheduled: true,
     timezone: "Asia/Kolkata"

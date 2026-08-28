@@ -4,7 +4,8 @@ import crypto from 'crypto';
 import { pool } from '../config/db';
 import { InvitationInput } from '../middleware/validate';
 import { RowDataPacket } from 'mysql2';
-import { sendInvitationEmail } from '../utils/email.utils';
+import { emailService } from '../services/email.service';
+import { pushService } from '../services/push.service';
 
 export const createInvitation = async (
   req: Request<{ id: string }, {}, InvitationInput>,
@@ -90,10 +91,31 @@ export const createInvitation = async (
       );
     }
 
-    // Send Email via Nodemailer
-    // We do not await this to avoid blocking the response, or we can await it if we want to ensure it sent
-    await sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err));
+    // Check email preference and send email
+    if (invitedUsers.length > 0) {
+      const [prefs] = await pool.execute<RowDataPacket[]>('SELECT email_enabled, push_enabled, expo_push_token FROM users WHERE email = ?', [email]);
+      
+      if (prefs.length > 0) {
+        if (prefs[0].email_enabled !== 0) {
+          await emailService.sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err));
+        }
 
+        if (prefs[0].push_enabled !== 0 && prefs[0].expo_push_token) {
+          let pushMessage = `${inviterName} ${isResend ? 'reminded you about the invite to' : 'invited you to'} ${eventTitle}`;
+          if (previousResponse) pushMessage = `${eventTitle}: ${inviterName} invited you again.`;
+          
+          await pushService.sendPushNotification(
+            prefs[0].expo_push_token,
+            'New Event Invitation! 🎉',
+            pushMessage,
+            { url: inviteLink }
+          );
+        }
+      }
+    } else {
+      // Not a registered user, just send the email anyway
+      await emailService.sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err));
+    }
     res.status(201).json({ success: true, message: isResend ? 'Invitation resent successfully' : 'Invitation sent successfully', token });
   } catch (error) {
     next(error);

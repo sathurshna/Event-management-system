@@ -2,11 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter, useSegments } from 'expo-router';
 import api from '../utils/api';
+import { registerForPushNotificationsAsync } from '../utils/notifications';
 
 export interface User {
   id: string;
   name: string;
   email: string;
+  push_enabled?: boolean;
+  email_enabled?: boolean;
 }
 
 interface AuthContextType {
@@ -64,6 +67,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await SecureStore.setItemAsync('accessToken', token);
     const response = await api.get('/auth/me');
     setUser(response.data.data);
+
+    // Register for push notifications after successful login
+    try {
+      const pushToken = await registerForPushNotificationsAsync();
+      if (pushToken) {
+        await api.put('/auth/me', { expo_push_token: pushToken });
+      }
+    } catch (e) {
+      console.log('Failed to register push token on login', e);
+    }
   };
 
   const logout = async () => {
@@ -77,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateUser = async (data: { name: string, avatar?: string }) => {
+  const updateUser = async (data: { name?: string, avatar?: string, push_enabled?: boolean, email_enabled?: boolean }) => {
     const response = await api.put('/auth/me', data);
     setUser(response.data.data.user);
   };

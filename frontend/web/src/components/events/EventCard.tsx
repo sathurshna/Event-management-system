@@ -17,6 +17,23 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
     weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
+  const isPast = new Date(date) < new Date();
+  let badgeColor = 'var(--primary-color)';
+  let badgeText = '';
+  let badgeTextColor = 'white';
+
+  if (isPast) {
+    badgeColor = '#4B5563'; // Gray
+    badgeText = 'Past';
+  } else if (is_public) {
+    badgeColor = '#EAB308'; // Yellow
+    badgeText = 'Public';
+    badgeTextColor = '#000000'; // Dark text for yellow
+  } else {
+    badgeColor = '#D946EF'; // Magenta
+    badgeText = 'Private';
+  }
+
   return (
     <div 
       className="glass-panel event-card-wrapper" 
@@ -56,13 +73,13 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
             No Image
           </div>
         )}
-        {is_public !== undefined && (
+        {(is_public !== undefined || isPast) && (
           <div style={{
             position: 'absolute', top: '12px', right: '12px',
-            backgroundColor: is_public ? 'var(--secondary-color)' : 'var(--primary-color)',
-            color: 'white', padding: '4px 12px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600
+            backgroundColor: badgeColor,
+            color: badgeTextColor, padding: '4px 12px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600
           }}>
-            {is_public ? 'Public' : 'Private'}
+            {badgeText}
           </div>
         )}
       </div>

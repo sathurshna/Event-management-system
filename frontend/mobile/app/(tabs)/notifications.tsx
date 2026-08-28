@@ -19,6 +19,7 @@ export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('All');
   const router = useRouter();
   const { colors, globalStyles } = useTheme();
 
@@ -79,6 +80,11 @@ export default function NotificationsScreen() {
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  
+  const filteredNotifications = notifications.filter(n => {
+    if (activeFilter === 'Unread') return !n.is_read;
+    return true; // 'All'
+  });
 
   return (
     <View style={globalStyles.container}>
@@ -90,21 +96,22 @@ export default function NotificationsScreen() {
       </View>
 
       <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.borderGlass }}>
-        {['All', 'Unread', 'Mentions'].map((filter, i) => (
+        {['All', 'Unread'].map((filter) => (
           <TouchableOpacity
             key={filter}
+            onPress={() => setActiveFilter(filter)}
             style={{
               paddingHorizontal: 16,
               paddingVertical: 8,
               borderRadius: 20,
-              backgroundColor: i === 0 ? colors.surfaceSecondary : 'transparent',
+              backgroundColor: activeFilter === filter ? colors.surfaceSecondary : 'transparent',
               borderWidth: 1,
-              borderColor: i === 0 ? colors.primary : colors.borderGlass,
+              borderColor: activeFilter === filter ? colors.primary : colors.borderGlass,
             }}
           >
             <Text style={{
-              color: i === 0 ? colors.primary : colors.textMuted,
-              fontWeight: i === 0 ? 'bold' : '600'
+              color: activeFilter === filter ? colors.primary : colors.textMuted,
+              fontWeight: activeFilter === filter ? 'bold' : '600'
             }}>
               {filter}
             </Text>
@@ -127,7 +134,7 @@ export default function NotificationsScreen() {
         </View>
       ) : (
         <FlatList
-          data={notifications}
+          data={filteredNotifications}
           keyExtractor={(item) => item.id}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
           contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}

@@ -119,7 +119,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
 // ─── Get Me (current user) ────────────────────────────────────────────────────
 export const getMe = catchAsync(async (req: Request, res: Response) => {
   const [users] = await pool.query<RowDataPacket[]>(
-    'SELECT id, name, email, avatar, created_at as createdAt FROM users WHERE id = ?',
+    'SELECT id, name, email, avatar, expo_push_token, push_enabled, email_enabled, created_at as createdAt FROM users WHERE id = ?',
     [req.user!.userId]
   );
   
@@ -144,28 +144,48 @@ export const getMe = catchAsync(async (req: Request, res: Response) => {
 // ─── Update Current User Profile ─────────────────────────────────────────────
 export const updateMe = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user!.userId;
-  const { name, avatar } = req.body;
+  const { name, avatar, expo_push_token, push_enabled, email_enabled } = req.body;
 
-  if (!name) {
-    throw new AppError('Name is required', 400);
+  // Build the update query dynamically
+  const updates: string[] = [];
+  const values: any[] = [];
+
+  if (name !== undefined) {
+    updates.push('name = ?');
+    values.push(name);
+  }
+  
+  if (avatar !== undefined) {
+    updates.push('avatar = ?');
+    values.push(avatar);
   }
 
-  // Update user in database
-  if (avatar) {
+  if (expo_push_token !== undefined) {
+    updates.push('expo_push_token = ?');
+    values.push(expo_push_token);
+  }
+
+  if (push_enabled !== undefined) {
+    updates.push('push_enabled = ?');
+    values.push(push_enabled);
+  }
+
+  if (email_enabled !== undefined) {
+    updates.push('email_enabled = ?');
+    values.push(email_enabled);
+  }
+
+  if (updates.length > 0) {
+    values.push(userId);
     await pool.query(
-      'UPDATE users SET name = ?, avatar = ? WHERE id = ?',
-      [name, avatar, userId]
-    );
-  } else {
-    await pool.query(
-      'UPDATE users SET name = ? WHERE id = ?',
-      [name, userId]
+      `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
+      values
     );
   }
 
   // Fetch updated user
   const [users] = await pool.query<RowDataPacket[]>(
-    'SELECT id, name, email, avatar, created_at, updated_at FROM users WHERE id = ?',
+    'SELECT id, name, email, avatar, expo_push_token, push_enabled, email_enabled, created_at, updated_at FROM users WHERE id = ?',
     [userId]
   );
 
