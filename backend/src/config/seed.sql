@@ -1,6 +1,12 @@
 -- Seed data for Eventra Database
 -- All users have the password: Password123!
 
+-- 0. Clear existing data to prevent duplicate entry errors
+DELETE FROM notifications;
+DELETE FROM rsvps;
+DELETE FROM events;
+DELETE FROM users;
+
 -- 1. Insert Users (Hosts & Guests)
 INSERT INTO users (id, name, email, password) VALUES
 ('user-alice', 'Alice Johnson', 'alice@example.com', '$2a$10$hxTNrqsU/pvAiQokDIfLXuNEs/d62lolGy.4QePulxNCh6ahs8abu'),
