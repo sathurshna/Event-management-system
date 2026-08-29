@@ -23,7 +23,7 @@ export const createInvitation = async (
       return res.status(404).json({ success: false, message: 'Event not found' });
     }
     
-    if (events[0].host_id !== inviterId) {
+    if (String(events[0].host_id).trim() !== String(inviterId).trim()) {
       return res.status(403).json({ success: false, message: 'Only the host can send invitations' });
     }
 
