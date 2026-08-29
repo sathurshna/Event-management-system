@@ -97,7 +97,7 @@ export const createInvitation = async (
       
       if (prefs.length > 0) {
         if (prefs[0].email_enabled !== 0) {
-          await emailService.sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err));
+          await emailService.sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err)).catch(e => console.error("Email failed:", e));
         }
 
         if (prefs[0].push_enabled !== 0 && prefs[0].expo_push_token) {
@@ -114,7 +114,7 @@ export const createInvitation = async (
       }
     } else {
       // Not a registered user, just send the email anyway
-      await emailService.sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err));
+      await emailService.sendInvitationEmail(email, inviterName, eventTitle, inviteLink).catch(err => console.error("Failed to send invite email", err)).catch(e => console.error("Email failed:", e));
     }
     res.status(201).json({ success: true, message: isResend ? 'Invitation resent successfully' : 'Invitation sent successfully', token });
   } catch (error) {
