@@ -89,7 +89,7 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
           {title}
         </h3>
         <p className="text-muted" style={{ margin: '0 0 20px 0', fontSize: '0.875rem', lineHeight: 1.5, flex: 1 }}>
-          {description.length > 100 ? description.substring(0, 100) + '...' : description}
+          {(description || '').length > 100 ? (description || '').substring(0, 100) + '...' : (description || '')}
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
