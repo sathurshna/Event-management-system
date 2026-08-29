@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Filter, CalendarPlus } from 'lucide-react';
+import { Search, CalendarPlus } from 'lucide-react';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/events/EventCard';

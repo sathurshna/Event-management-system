@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Calendar, MapPin, User, Users, Share2, Edit, Trash2, ArrowLeft, Mail, Globe, Lock } from 'lucide-react';
+import { Calendar, MapPin, User, Share2, Edit, Trash2, ArrowLeft, Mail, Globe, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
