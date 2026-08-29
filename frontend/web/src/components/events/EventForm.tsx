@@ -14,6 +14,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
@@ -38,15 +39,23 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: '' }));
     setIsDirty(true);
   };
 
   const nextStep = () => {
-    if (step === 1 && (!formData.title || !formData.description)) {
-      return toast.error('Please fill in title and description');
+    const errors: Record<string, string> = {};
+    if (step === 1) {
+      if (!formData.title) errors.title = 'Title is required';
+      if (!formData.description) errors.description = 'Description is required';
     }
-    if (step === 2 && (!formData.date || !formData.location)) {
-      return toast.error('Please fill in date and location');
+    if (step === 2) {
+      if (!formData.date) errors.date = 'Date is required';
+      if (!formData.location) errors.location = 'Location is required';
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
     }
     setStep(step + 1);
   };
@@ -81,7 +90,14 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
     } catch (error: any) {
       const errorData = error.response?.data;
       if (errorData?.errors && errorData.errors.length > 0) {
-        toast.error(errorData.errors[0].message);
+        const errors: Record<string, string> = {};
+        errorData.errors.forEach((err: any) => {
+          if (err.path && err.path[0]) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        setFieldErrors(errors);
+        toast.error('Please fix the errors before submitting');
       } else {
         toast.error(errorData?.message || 'Failed to save event');
       }
@@ -123,23 +139,25 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Event Title *</label>
             <input 
-              className="input-field" 
+              className={`input-field ${fieldErrors.title ? 'border-red-500 focus:border-red-500' : ''}`}
               placeholder="E.g., Tech Startup Mixer" 
               value={formData.title} 
               onChange={(e) => handleChange('title', e.target.value)} 
               required
             />
+            {fieldErrors.title && <p className="text-red-500 text-sm mt-1">{fieldErrors.title}</p>}
           </div>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Description *</label>
             <textarea 
-              className="input-field" 
+              className={`input-field ${fieldErrors.description ? 'border-red-500 focus:border-red-500' : ''}`}
               placeholder="What is this event about?" 
               value={formData.description} 
               onChange={(e) => handleChange('description', e.target.value)} 
               rows={5}
               required
             />
+            {fieldErrors.description && <p className="text-red-500 text-sm mt-1">{fieldErrors.description}</p>}
           </div>
         </div>
       )}
@@ -152,21 +170,23 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
             {/* Custom styled datetime-local picker */}
             <input 
               type="datetime-local" 
-              className="input-field" 
+              className={`input-field ${fieldErrors.date ? 'border-red-500 focus:border-red-500' : ''}`}
               value={formData.date} 
               onChange={(e) => handleChange('date', e.target.value)} 
               required
             />
+            {fieldErrors.date && <p className="text-red-500 text-sm mt-1">{fieldErrors.date}</p>}
           </div>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Location / Venue *</label>
             <input 
-              className="input-field" 
+              className={`input-field ${fieldErrors.location ? 'border-red-500 focus:border-red-500' : ''}`}
               placeholder="Full address or meeting link" 
               value={formData.location} 
               onChange={(e) => handleChange('location', e.target.value)} 
               required
             />
+            {fieldErrors.location && <p className="text-red-500 text-sm mt-1">{fieldErrors.location}</p>}
           </div>
         </div>
       )}
