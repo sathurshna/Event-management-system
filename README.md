@@ -1,114 +1,81 @@
-<div align="center">
-  
-# 🗓️ Eventra 
-# Event Management System
+# Eventra - Event Management Platform
 
-A modern, full-stack event management platform supporting beautiful Web and Mobile client applications. Plan, host, discover, and RSVP to events with ease!
+![Eventra Cover](https://via.placeholder.com/1200x400?text=Eventra)
 
-![Architecture](https://img.shields.io/badge/Architecture-REST_API-indigo.svg)
-![Backend](https://img.shields.io/badge/Backend-Express.js_%7C_MySQL-green.svg)
-![Web](https://img.shields.io/badge/Web-React_%7C_Vite-blue.svg)
-![Mobile](https://img.shields.io/badge/Mobile-React_Native_%7C_Expo-black.svg)
+Eventra is a modern, full-stack event management application that allows users to seamlessly discover, create, and manage events. Designed with a sleek "glassmorphism" aesthetic, Eventra delivers a premium user experience across both Web and Mobile platforms.
 
-</div>
+## ✨ Features
 
-## ✨ Key Features
+- **User Authentication**: Secure JWT-based login and registration.
+- **Event Discovery**: Browse public events with advanced filtering (by search term, category, and date).
+- **Event Management**: Create, edit, and delete events.
+- **RSVP System**: RSVP to events (Attending, Maybe, Cant Go) and track attendees.
+- **Calendar View**: A comprehensive monthly, weekly, and daily view of all your events.
+- **Real-time Notifications**: Receive updates when someone RSVPs to your event or invites you to an event.
+- **Mobile Support**: Fully responsive web design and a standalone React Native mobile app.
 
-- **Cross-Platform Access:** Fully functional React Web Dashboard and a companion React Native (Expo) Mobile App.
-- **Dynamic Calendar Views:** Color-coded calendar interface separating personal events from public discoveries.
-- **RSVP & Invites:** Send email invites to guests and track live RSVP statuses (Attending, Maybe, Declined).
-- **Real-Time Notifications:** Live polling for in-app unread notifications and dropdown panels.
-- **Background Cron Jobs:** Automated reminders sent exactly 24 hours before an event begins.
-- **Glassmorphic UI:** A highly polished, modern user interface featuring dark mode and translucent glass elements.
+## 🛠️ Tech Stack
 
----
-
-## 🚀 Tech Stack
-
-### Backend (API)
-- **Runtime:** Node.js + Express.js
-- **Database:** MySQL
-- **Driver:** `mysql2` (Raw SQL architecture—optimized for high performance without ORM overhead)
-- **Validation:** Zod
-- **Auth:** JWT + bcrypt
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: MySQL (via `mysql2`)
+- **Authentication**: JWT (JSON Web Tokens)
+- **Testing**: Jest & Supertest
 
 ### Frontend (Web)
-- **Framework:** React + TypeScript
-- **Bundler:** Vite
-- **Styling:** Custom CSS (Glassmorphism, CSS Variables)
-- **Routing:** React Router DOM
-- **Components:** FullCalendar, Lucide Icons
+- **Framework**: React 18
+- **Routing**: React Router v7
+- **Styling**: Vanilla CSS (Custom Design System & Glassmorphism)
+- **Icons**: Lucide React
+- **Calendar**: FullCalendar
+- **Testing**: Playwright
 
-### Mobile (iOS/Android)
-- **Framework:** React Native + TypeScript
-- **Toolchain:** Expo
-- **Navigation:** Expo Router (`app/` directory)
+### Frontend (Mobile)
+- **Framework**: React Native (Expo)
+- **Styling**: StyleSheet
+- **Navigation**: React Navigation
 
----
+## 🚀 Prerequisites
 
-## 📂 Project Structure
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/en/) (v16 or higher)
+- [MySQL](https://www.mysql.com/) (v8 or higher)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) (for mobile development)
 
-```text
-📦 Event Management System
- ┣ 📂 backend/         # Express REST API & MySQL Database logic
- ┣ 📂 frontend/
- ┃ ┗ 📂 web/           # React Web Application
- ┗ 📂 frontend/
-   ┗ 📂 mobile/        # React Native (Expo) Application
-```
+## 💻 Local Setup Instructions
 
----
-
-## 🛠️ Quick Start Guide
-
-### Prerequisites
-- Node.js (v18+)
-- MySQL Server (running locally or remotely)
-- Expo Go App (on your mobile device for testing)
-
-### 1. Setup the Database
-Create the database and load the schema directly into MySQL:
+### 1. Clone the repository
 ```bash
-cd backend
-mysql -u root -p -e "DROP DATABASE IF EXISTS event_management; CREATE DATABASE event_management;"
-mysql -u root -p event_management < src/config/schema.sql
+git clone https://github.com/your-username/event-management-system.git
+cd event-management-system
 ```
 
-*(Optional)* Load the dummy seed data to populate your app with sample users, events, and RSVPs (all seed user passwords are `Password123!`):
-```bash
-mysql -u root -p event_management < src/config/seed.sql
-```
+### 2. Database Setup
+1. Log into your local MySQL instance.
+2. Create a new database: `CREATE DATABASE event_management;`
+3. Run the initialization script located in `backend/scripts/init_db.sql` to create all required tables.
 
-### 2. Configure Environment Variables
-Inside the `backend/` directory, create a `.env` file and configure your variables:
-```env
-PORT=4000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=event_management
-JWT_SECRET=super_secret_key
-CLIENT_URL=http://localhost:5173
-```
-
-### 3. Run the Backend API
-Start the Node.js server.
+### 3. Backend Setup
 ```bash
 cd backend
 npm install
+```
+Create a `.env` file in the `backend` directory using the environment variables reference below.
+```bash
 npm run dev
 ```
 
-### 4. Run the Web Application
-Start the React Vite development server.
+### 4. Web Frontend Setup
 ```bash
 cd frontend/web
 npm install
 npm run dev
 ```
+The web app will be accessible at `http://localhost:5173`.
 
-### 5. Run the Mobile App
-Start the Expo Metro bundler. Scan the generated QR code using the **Expo Go** app on your phone.
+### 5. Mobile App Setup
 ```bash
 cd frontend/mobile
 npm install
@@ -118,24 +85,38 @@ npx expo start
 > - **Android**: Download the latest SDK 57 APK directly from [expo.dev/go](https://expo.dev/go).
 > - **iOS**: You must use an iOS Simulator (`npx expo start --ios`) or a custom Development Build, as custom SDKs cannot be sideloaded on physical iPhones.
 
----
+## 🔐 Environment Variables
 
-## 🚀 Future Improvements & Production Readiness
+Create a `.env` file in the `backend` directory with the following variables:
 
-While the current application is fully functional, moving to a production environment requires a few final setup steps:
+| Variable | Description | Default Value |
+|----------|-------------|---------------|
+| `PORT` | The port the backend server runs on | `3000` |
+| `DB_HOST` | MySQL database host | `localhost` |
+| `DB_USER` | MySQL database user | `root` |
+| `DB_PASSWORD` | MySQL database password | `password` |
+| `DB_NAME` | MySQL database name | `event_management` |
+| `JWT_SECRET` | Secret key for JWT signing | `your_super_secret_key` |
+| `JWT_EXPIRES_IN` | JWT expiration time | `24h` |
 
-### 1. Real Email Integration (Nodemailer)
-The application is currently designed to use local/development configurations for the email service. For production, you must use a real authenticated SMTP provider (e.g. Gmail, SendGrid, Amazon SES) so that invites and reminders actually reach users' inboxes.
+## 🧪 Testing
 
-**Gmail Example Setup:**
-Generate a 16-character [Google App Password](https://myaccount.google.com/) under Security > 2-Step Verification, then update the backend `.env`:
-```env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=your_real_email@gmail.com
-SMTP_PASS=your_16_char_app_password
+### Backend Unit Tests
+The backend uses Jest for unit testing.
+```bash
+cd backend
+npm test
 ```
 
-### 2. Expo Application Services (EAS) Setup
-Push notifications are currently delivered as local notifications in the simulator for testing. To send native push notifications over the air to real devices, link the Expo project to an EAS backend by running `eas init` in the mobile directory and providing a real `projectId` to the notification service.
+### Frontend End-to-End Tests
+The frontend uses Playwright for comprehensive E2E testing.
+```bash
+cd frontend/web
+npx playwright test
+```
 
+## 🤝 Contributing
+Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Check, Trash } from 'lucide-react';
+import { Bell, Check } from 'lucide-react';
 import api from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 

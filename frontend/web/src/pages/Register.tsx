@@ -8,12 +8,14 @@ const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFieldErrors({});
     
     try {
       await api.post('/auth/register', { name, email, password });
@@ -21,8 +23,16 @@ const Register: React.FC = () => {
       navigate('/login');
     } catch (error: any) {
       if (error.response?.data?.errors) {
-        // Handle Zod validation array
-        error.response.data.errors.forEach((err: any) => toast.error(err.message));
+        // Handle Zod validation array by mapping them to field paths
+        const errors: Record<string, string> = {};
+        error.response.data.errors.forEach((err: any) => {
+          if (err.path && err.path[0]) {
+            errors[err.path[0]] = err.message;
+          } else {
+            toast.error(err.message);
+          }
+        });
+        setFieldErrors(errors);
       } else {
         toast.error(error.response?.data?.message || 'Failed to register');
       }
@@ -42,39 +52,51 @@ const Register: React.FC = () => {
             <User size={18} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-muted)' }} />
             <input 
               type="text" 
-              className="input-field" 
+              className={`input-field ${fieldErrors.name ? 'border-red-500 focus:border-red-500' : ''}`}
               placeholder="Full Name" 
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                setFieldErrors(prev => ({ ...prev, name: '' }));
+              }}
               style={{ paddingLeft: '40px' }}
               required 
             />
+            {fieldErrors.name && <p className="text-red-500 text-sm mt-1">{fieldErrors.name}</p>}
           </div>
 
           <div style={{ position: 'relative' }}>
             <Mail size={18} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-muted)' }} />
             <input 
               type="email" 
-              className="input-field" 
+              className={`input-field ${fieldErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
               placeholder="Email Address" 
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setFieldErrors(prev => ({ ...prev, email: '' }));
+              }}
               style={{ paddingLeft: '40px' }}
               required 
             />
+            {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
           </div>
 
           <div style={{ position: 'relative' }}>
             <Lock size={18} style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-muted)' }} />
             <input 
               type="password" 
-              className="input-field" 
+              className={`input-field ${fieldErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
               placeholder="Password" 
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setFieldErrors(prev => ({ ...prev, password: '' }));
+              }}
               style={{ paddingLeft: '40px' }}
               required 
             />
+            {fieldErrors.password && <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>}
           </div>
 
           <button type="submit" className="btn-primary" disabled={isSubmitting} style={{ marginTop: '0.5rem' }}>

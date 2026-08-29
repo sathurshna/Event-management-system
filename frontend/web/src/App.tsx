@@ -20,6 +20,10 @@ import './index.css';
 
 import Layout from './components/layout/Layout';
 
+import ErrorBoundary from './components/ui/ErrorBoundary';
+import NotFound from './pages/NotFound';
+import ServerError from './pages/ServerError';
+
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
@@ -32,6 +36,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
       <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
       <Route path="/invites/:token" element={<InviteAccept />} />
+      <Route path="/500" element={<ServerError />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
@@ -45,27 +50,31 @@ const AppRoutes = () => {
           <Route path="/events/:id/edit" element={<EditEvent />} />
         </Route>
       </Route>
+      
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-        <Toaster
-          position="bottom-center"
-          toastOptions={{
-            style: {
-              background: '#334155',
-              color: '#f8fafc',
-              border: '1px solid #475569',
-            }
-          }}
-        />
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              style: {
+                background: '#334155',
+                color: '#f8fafc',
+                border: '1px solid #475569',
+              }
+            }}
+          />
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
