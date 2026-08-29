@@ -127,7 +127,10 @@ const NotificationsPage: React.FC = () => {
 
       <div className="glass-panel" style={{ overflow: 'hidden' }}>
         {loading ? (
-          <div className="flex-center" style={{ padding: '64px' }}>Loading...</div>
+          <div className="flex-center" style={{ padding: '64px', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ width: '32px', height: '32px', border: '3px solid var(--border-color)', borderTopColor: 'var(--primary-color)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <span style={{ color: 'var(--text-muted)' }}>Loading notifications...</span>
+          </div>
         ) : filteredNotifications.length === 0 ? (
           <div className="flex-center" style={{ padding: '64px', color: 'var(--text-muted)' }}>
             You have no notifications in this view.
