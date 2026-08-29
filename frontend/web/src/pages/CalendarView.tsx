@@ -6,7 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { X, Calendar as CalendarIcon, MapPin, Users, Plus, AlertTriangle, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Calendar as CalendarIcon, MapPin, Users, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface EventData {
   id: string;

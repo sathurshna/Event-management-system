@@ -5,6 +5,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  userId?: string;
+  push_enabled?: boolean;
+  email_enabled?: boolean;
   avatar?: string | null;
 }
 
