@@ -24,7 +24,7 @@ export const createInvitation = async (
     }
     
     if (String(events[0].host_id).trim() !== String(inviterId).trim()) {
-      return res.status(403).json({ success: false, message: 'Only the host can send invitations' });
+      return res.status(403).json({ success: false, message: 'Only host can invite. Event host: ${events[0].host_id}, You: ${inviterId}' });
     }
 
     const eventTitle = events[0].title;
