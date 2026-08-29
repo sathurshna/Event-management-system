@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, Compass, Settings, X, CalendarPlus, Bell } from 'lucide-react';
+import { CalendarDays, Settings, X, CalendarPlus, Bell } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;

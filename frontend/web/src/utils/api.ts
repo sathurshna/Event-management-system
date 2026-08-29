@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
-
 // Create an Axios instance
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: 'http://localhost:4000/api',
   withCredentials: true, // Important for sending/receiving HTTP-only cookies
 });
 
@@ -28,7 +26,7 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh the token using the HTTP-only cookie
         const res = await axios.post(
-          `${API_URL}/auth/refresh`,
+          'http://localhost:4000/api/auth/refresh',
           {},
           { withCredentials: true }
         );
