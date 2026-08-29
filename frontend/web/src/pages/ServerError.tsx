@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// Link removed
 import { ServerCrash } from 'lucide-react';
 
 const ServerError: React.FC = () => {
@@ -10,12 +10,12 @@ const ServerError: React.FC = () => {
       <p className="text-[var(--color-text-muted)] mb-8 max-w-md">
         Something went wrong on our end. Please try again later or contact support if the issue persists.
       </p>
-      <Link 
-        to="/" 
+      <a 
+        href="/" 
         className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
       >
         Return to Dashboard
-      </Link>
+      </a>
     </div>
   );
 };
