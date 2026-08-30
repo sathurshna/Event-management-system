@@ -43,21 +43,40 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, curr
 
   if (isPublic) {
     conditions.push('e.is_public = 1');
-  } else if (currentUserId && currentUserEmail) {
+  } else if (currentUserId) {
     if (category === 'hosting') {
       conditions.push('e.host_id = ?');
       values.push(currentUserId);
     } else if (category === 'attending') {
-      conditions.push(`(e.host_id != ? AND (EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING') OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)))`);
-      values.push(currentUserId, currentUserId, currentUserEmail);
+      // RSVP YES (ATTENDING) OR accepted invitation
+      let attendCond = `(EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
+      values.push(currentUserId);
+      if (currentUserEmail) {
+        attendCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)`;
+        values.push(currentUserEmail);
+      }
+      attendCond += `)`;
+      conditions.push(attendCond);
     } else if (category === 'calendar') {
       // Calendar view: strictly personal (hosting or active RSVP)
-      conditions.push(`(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status != 'DECLINED') OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE))`);
-      values.push(currentUserId, currentUserId, currentUserEmail);
+      let calCond = `(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status != 'DECLINED')`;
+      values.push(currentUserId, currentUserId);
+      if (currentUserEmail) {
+        calCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)`;
+        values.push(currentUserEmail);
+      }
+      calCond += `)`;
+      conditions.push(calCond);
     } else {
       // Default to 'all' (Discovery view - includes all public events, and private events user is attending/hosting/invited to)
-      conditions.push(`(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING') OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE))`);
-      values.push(currentUserId, currentUserId, currentUserEmail);
+      let allCond = `(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
+      values.push(currentUserId, currentUserId);
+      if (currentUserEmail) {
+        allCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)`;
+        values.push(currentUserEmail);
+      }
+      allCond += `)`;
+      conditions.push(allCond);
     }
   }
 
@@ -91,6 +110,10 @@ export const getMyEvents = catchAsync(async (req: Request, res: Response) => {
   const userEmail = req.user!.email;
   const base = `SELECT e.id, e.title, e.description, e.date, e.location, e.is_public, e.cover_image, e.created_at, e.host_id FROM events e`;
   const { finalQuery, values } = buildQuery(base, req.query, false, hostId, userEmail);
+
+  console.log(`[getMyEvents DEBUG] category: ${req.query.category}, hostId: ${hostId}, email: ${userEmail}`);
+  console.log(`[getMyEvents DEBUG] Query: ${finalQuery}`);
+  console.log(`[getMyEvents DEBUG] Values:`, values);
 
   const [events] = await pool.query<RowDataPacket[]>(finalQuery, values);
   res.status(200).json({ success: true, data: events });
