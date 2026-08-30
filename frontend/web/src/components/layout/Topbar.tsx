@@ -13,13 +13,13 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   return (
     <header 
+      className="topbar-wrapper"
       style={{
         height: '64px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 24px',
-        margin: '24px 24px 0 24px',
         borderRadius: '32px',
         backgroundColor: 'var(--surface-color-glass)',
         backdropFilter: 'blur(16px)',

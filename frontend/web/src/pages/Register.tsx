@@ -43,7 +43,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex-center" style={{ minHeight: '100vh' }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '2rem' }}>
+      <div className="glass-panel auth-panel" style={{ width: '100%', maxWidth: '420px', padding: '2.5rem 2rem', zIndex: 1, border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Create Account</h2>
         
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

@@ -323,3 +323,35 @@ h4 {
   background-color: var(--overlay-medium) !important;
   transition: background-color 0.2s ease;
 }
+/* Responsive layout adjustments for mobile */
+body {
+  overflow-x: hidden;
+}
+
+.auth-panel {
+  width: calc(100% - 32px) !important;
+  margin: 0 16px;
+}
+
+.topbar-wrapper {
+  margin: 24px 24px 0 24px !important;
+}
+
+.main-area {
+  padding: 24px !important;
+}
+
+@media (max-width: 768px) {
+  .topbar-wrapper {
+    margin: 12px 12px 0 12px !important;
+    padding: 0 16px !important;
+  }
+  
+  .main-area {
+    padding: 16px !important;
+  }
+  
+  .glass-panel {
+    padding: 16px !important;
+  }
+}
