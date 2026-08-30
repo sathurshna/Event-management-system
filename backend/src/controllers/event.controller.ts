@@ -20,14 +20,6 @@ export const createEvent = catchAsync(async (req: Request, res: Response) => {
     [eventId, title, description, formattedDate, formattedEndDate, location, isPublic ? 1 : 0, coverImage, hostId]
   );
 
-  // Auto-RSVP the host as ATTENDING
-  const rsvpId = uuidv4();
-  await pool.query(
-    `INSERT INTO rsvps (id, event_id, user_id, status) VALUES (?, ?, ?, 'ATTENDING')
-     ON DUPLICATE KEY UPDATE status = 'ATTENDING'`,
-    [rsvpId, eventId, hostId]
-  );
-
   res.status(201).json({
     success: true,
     data: { id: eventId },
@@ -48,31 +40,32 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, curr
       conditions.push('e.host_id = ?');
       values.push(currentUserId);
     } else if (category === 'attending') {
-      // RSVP YES (ATTENDING) OR accepted invitation
+      // Attendance definition: RSVP = YES OR (Invitation = ACCEPTED AND NO RSVP EXISTS)
+      // RSVP represents the latest explicit manual decision and overrides invitation state.
       let attendCond = `(EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
       values.push(currentUserId);
       if (currentUserEmail) {
-        attendCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)`;
-        values.push(currentUserEmail);
+        attendCond += ` OR (EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE) AND NOT EXISTS (SELECT 1 FROM rsvps r2 WHERE r2.event_id = e.id AND r2.user_id = ?))`;
+        values.push(currentUserEmail, currentUserId);
       }
       attendCond += `)`;
       conditions.push(attendCond);
     } else if (category === 'calendar') {
-      // Calendar view: strictly personal (hosting or active RSVP)
-      let calCond = `(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status != 'DECLINED')`;
+      // Calendar view: strictly personal (hosting + active RSVP or accepted invite overriding)
+      let calCond = `(e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
       values.push(currentUserId, currentUserId);
       if (currentUserEmail) {
-        calCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)`;
-        values.push(currentUserEmail);
+        calCond += ` OR (EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE) AND NOT EXISTS (SELECT 1 FROM rsvps r2 WHERE r2.event_id = e.id AND r2.user_id = ?))`;
+        values.push(currentUserEmail, currentUserId);
       }
       calCond += `)`;
       conditions.push(calCond);
     } else {
       // Default to 'all' (Discovery view - includes all public events, and private events user is attending/hosting/invited to)
-      let allCond = `(e.host_id = ? OR e.is_public = 1 OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
+      let allCond = `(e.is_public = 1 OR e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
       values.push(currentUserId, currentUserId);
       if (currentUserEmail) {
-        allCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE)`;
+        allCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.declined = FALSE)`;
         values.push(currentUserEmail);
       }
       allCond += `)`;
@@ -123,11 +116,15 @@ export const getMyEvents = catchAsync(async (req: Request, res: Response) => {
 export const getMyStats = catchAsync(async (req: Request, res: Response) => {
   const hostId = req.user!.userId;
   
+  const userEmail = req.user!.email;
+  
   const [activeRes] = await pool.query<RowDataPacket[]>(
-    `SELECT COUNT(r.id) as count 
-     FROM rsvps r 
-     WHERE r.user_id = ? AND r.status = 'ATTENDING'`,
-    [hostId]
+    `SELECT COUNT(*) as count 
+     FROM events e
+     WHERE EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')
+        OR (EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.accepted = TRUE) 
+            AND NOT EXISTS (SELECT 1 FROM rsvps r2 WHERE r2.event_id = e.id AND r2.user_id = ?))`,
+    [hostId, userEmail, hostId]
   );
   
   const [attendeesRes] = await pool.query<RowDataPacket[]>(
@@ -190,9 +187,11 @@ export const getEventDetail = catchAsync(async (req: Request, res: Response) => 
     if (!req.user) {
       throw new AppError('You do not have permission to view this event', 403);
     }
-    // Check if the user is invited and accepted (has an RSVP)
+    // Check if the user has an active RSVP or a non-declined invitation
     const [rsvps] = await pool.query<RowDataPacket[]>('SELECT id, status FROM rsvps WHERE event_id = ? AND user_id = ?', [id, req.user.userId]);
-    if (rsvps.length === 0 || rsvps[0].status === 'DECLINED') {
+    const [invites] = await pool.query<RowDataPacket[]>('SELECT id FROM invitations WHERE event_id = ? AND email = ? AND declined = FALSE', [id, req.user.email]);
+
+    if ((rsvps.length === 0 || rsvps[0].status === 'DECLINED') && invites.length === 0) {
       throw new AppError('You do not have permission to view this event', 403);
     }
   }

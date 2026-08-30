@@ -24,7 +24,7 @@ export const createInvitation = async (
     }
     
     if (String(events[0].host_id).trim() !== String(inviterId).trim()) {
-      return res.status(403).json({ success: false, message: 'Only host can invite. Event host: ${events[0].host_id}, You: ${inviterId}' });
+      return res.status(403).json({ success: false, message: `Only host can invite. Event host: ${events[0].host_id}, You: ${inviterId}` });
     }
 
     const eventTitle = events[0].title;
@@ -178,28 +178,12 @@ export const acceptInvitation = async (
 
     await pool.execute('UPDATE invitations SET accepted = true, note = ? WHERE token = ?', [note || null, token]);
 
-    // Check if the guest is a registered user
+    // Check if the guest is a registered user for notification purposes
     const [users] = await pool.execute<RowDataPacket[]>('SELECT id, name FROM users WHERE email = ?', [email]);
     let guestName = email;
 
     if (users.length > 0) {
-      const userId = users[0].id;
       guestName = users[0].name;
-
-      // Auto-RSVP
-      const [existingRsvp] = await pool.execute<RowDataPacket[]>(
-        'SELECT id FROM rsvps WHERE user_id = ? AND event_id = ?',
-        [userId, eventId]
-      );
-
-      if (existingRsvp.length > 0) {
-        await pool.execute('UPDATE rsvps SET status = ? WHERE id = ?', ['ATTENDING', existingRsvp[0].id]);
-      } else {
-        await pool.execute(
-          'INSERT INTO rsvps (id, status, user_id, event_id) VALUES (?, ?, ?, ?)',
-          [uuidv4(), 'ATTENDING', userId, eventId]
-        );
-      }
     }
 
     // Notify the host
@@ -247,28 +231,12 @@ export const declineInvitation = async (
 
     await pool.execute('UPDATE invitations SET declined = true, note = ? WHERE token = ?', [note || null, token]);
 
-    // Check if the guest is a registered user
+    // Check if the guest is a registered user for notification purposes
     const [users] = await pool.execute<RowDataPacket[]>('SELECT id, name FROM users WHERE email = ?', [email]);
     let guestName = email;
 
     if (users.length > 0) {
-      const userId = users[0].id;
       guestName = users[0].name;
-
-      // Auto-RSVP (Declined)
-      const [existingRsvp] = await pool.execute<RowDataPacket[]>(
-        'SELECT id FROM rsvps WHERE user_id = ? AND event_id = ?',
-        [userId, eventId]
-      );
-
-      if (existingRsvp.length > 0) {
-        await pool.execute('UPDATE rsvps SET status = ? WHERE id = ?', ['DECLINED', existingRsvp[0].id]);
-      } else {
-        await pool.execute(
-          'INSERT INTO rsvps (id, status, user_id, event_id) VALUES (?, ?, ?, ?)',
-          [uuidv4(), 'DECLINED', userId, eventId]
-        );
-      }
     }
 
     // Notify the host

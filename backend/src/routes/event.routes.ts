@@ -11,7 +11,7 @@ import {
   getMyStats
 } from '../controllers/event.controller';
 
-import { submitRsvp, getEventAttendees } from '../controllers/rsvp.controller';
+import { submitRsvp, getEventAttendees, getMyRsvpForEvent } from '../controllers/rsvp.controller';
 import { createInvitation } from '../controllers/invitation.controller';
 import { rsvpSchema, invitationSchema } from '../middleware/validate';
 
@@ -48,6 +48,7 @@ router.delete('/:id', deleteEvent);
 
 // RSVP & Invites
 router.post('/:id/rsvp', validate(rsvpSchema), submitRsvp);
+router.get('/:id/my-rsvp', getMyRsvpForEvent);
 router.get('/:id/rsvps', getEventAttendees);
 router.post('/:id/invites', validate(invitationSchema), createInvitation);
 

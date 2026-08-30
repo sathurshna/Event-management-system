@@ -4,6 +4,7 @@ import { pool } from '../config/db';
 import { RsvpInput } from '../middleware/validate';
 import { RowDataPacket } from 'mysql2';
 
+// ─── Submit RSVP ──────────────────────────────────────────────────────────────
 export const submitRsvp = async (
   req: Request<{ id: string }, {}, RsvpInput>,
   res: Response,
@@ -21,6 +22,9 @@ export const submitRsvp = async (
     }
 
     const event = events[0];
+    if (event.host_id === userId) {
+      return res.status(400).json({ success: false, message: 'Hosts cannot RSVP to their own events' });
+    }
 
     // Check if RSVP exists
     const [rsvps] = await pool.execute<RowDataPacket[]>('SELECT id, status FROM rsvps WHERE user_id = ? AND event_id = ?', [userId, eventId]);
@@ -70,6 +74,7 @@ export const submitRsvp = async (
   }
 };
 
+// ─── Get Event Attendees ──────────────────────────────────────────────────────
 export const getEventAttendees = async (
   req: Request<{ id: string }>,
   res: Response,
@@ -79,19 +84,45 @@ export const getEventAttendees = async (
     const eventId = req.params.id;
 
     const [attendees] = await pool.execute<RowDataPacket[]>(
-      `SELECT r.id as rsvp_id, r.status, r.note, r.created_at, u.id as user_id, u.name, u.avatar 
+      `SELECT u.id as user_id, u.name, u.avatar
+       FROM events e
+       JOIN users u ON e.host_id = u.id
+       WHERE e.id = ?
+       
+       UNION
+       
+       SELECT u.id as user_id, u.name, u.avatar
        FROM rsvps r
        JOIN users u ON r.user_id = u.id
-       WHERE r.event_id = ?`,
-      [eventId]
+       WHERE r.event_id = ? AND r.status = 'ATTENDING'
+       
+       UNION
+       
+       SELECT u.id as user_id, u.name, u.avatar
+       FROM invitations i
+       JOIN users u ON i.email = u.email
+       WHERE i.event_id = ? AND i.accepted = TRUE
+         AND NOT EXISTS (SELECT 1 FROM rsvps r2 WHERE r2.event_id = i.event_id AND r2.user_id = u.id)`,
+      [eventId, eventId, eventId]
     );
 
-    res.status(200).json({ success: true, data: attendees });
+    // Note: we just default role to 'GUEST' in the API mapping for simplicity, except for the host
+    const [eventRecord] = await pool.execute<RowDataPacket[]>('SELECT host_id FROM events WHERE id = ?', [eventId]);
+    const hostId = eventRecord[0]?.host_id;
+
+    const mappedAttendees = attendees.map(a => ({
+      ...a,
+      role: a.user_id === hostId ? 'HOST' : 'GUEST',
+      status: 'ATTENDING'
+    }));
+
+    res.status(200).json({ success: true, data: mappedAttendees });
   } catch (error) {
     next(error);
   }
 };
 
+// ─── Get My RSVPs ─────────────────────────────────────────────────────────────
 export const getMyRsvps = async (
   req: Request,
   res: Response,
@@ -110,6 +141,48 @@ export const getMyRsvps = async (
     );
 
     res.status(200).json({ success: true, data: myRsvps });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─── Get My RSVP For Event ────────────────────────────────────────────────────
+export const getMyRsvpForEvent = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const eventId = req.params.id;
+    const userId = req.user!.userId;
+    const email = req.user!.email;
+
+    let rsvpStatus = null;
+    let rsvpNote = null;
+
+    // Check RSVP table
+    const [rsvps] = await pool.execute<RowDataPacket[]>(
+      'SELECT status, note FROM rsvps WHERE user_id = ? AND event_id = ?',
+      [userId, eventId]
+    );
+
+    if (rsvps.length > 0) {
+      rsvpStatus = rsvps[0].status;
+      rsvpNote = rsvps[0].note;
+    } else if (email) {
+      // Check invitations if no RSVP exists
+      const [invites] = await pool.execute<RowDataPacket[]>(
+        'SELECT accepted, declined, note FROM invitations WHERE email = ? AND event_id = ?',
+        [email, eventId]
+      );
+      if (invites.length > 0) {
+        if (invites[0].accepted) rsvpStatus = 'ATTENDING';
+        else if (invites[0].declined) rsvpStatus = 'DECLINED';
+        rsvpNote = invites[0].note;
+      }
+    }
+
+    res.status(200).json({ success: true, data: rsvpStatus ? { status: rsvpStatus, note: rsvpNote } : null });
   } catch (error) {
     next(error);
   }

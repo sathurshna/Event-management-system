@@ -37,17 +37,29 @@ const RsvpSection: React.FC<RsvpSectionProps> = ({ eventId, isOwner, hostId }) =
 
   const fetchAttendees = async () => {
     try {
-      const res = await api.get(`/events/${eventId}/rsvps`);
-      setAttendees(res.data.data);
-      if (user) {
-        const me = res.data.data.find((a: Attendee) => a.user_id === user.id);
-        if (me) {
-          setMyRsvp(me);
-          setPendingStatus(me.status);
-          setNote(me.note || '');
-        } else {
-          setMyRsvp(null);
-        }
+      const [attendeesRes, myRsvpRes] = await Promise.all([
+        api.get(`/events/${eventId}/rsvps`),
+        user ? api.get(`/events/${eventId}/my-rsvp`) : Promise.resolve({ data: { data: null } })
+      ]);
+      
+      setAttendees(attendeesRes.data.data);
+      
+      if (user && myRsvpRes.data.data) {
+        const meData = myRsvpRes.data.data;
+        setMyRsvp({
+          rsvp_id: 'me',
+          status: meData.status,
+          note: meData.note,
+          user_id: user.id,
+          name: user.name || '',
+          avatar: null
+        });
+        setPendingStatus(meData.status);
+        setNote(meData.note || '');
+      } else {
+        setMyRsvp(null);
+        setPendingStatus('ATTENDING');
+        setNote('');
       }
     } catch (error) {
       console.error('Failed to fetch RSVPs', error);
