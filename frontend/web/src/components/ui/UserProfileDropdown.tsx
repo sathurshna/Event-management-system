@@ -44,18 +44,20 @@ export default function UserProfileDropdown() {
 
       {isOpen && (
         <div 
-          className="glass-panel"
           style={{
-            position: 'absolute',
-            top: '50px',
-            right: '0',
-            width: '280px',
+            position: 'fixed',
+            top: '80px',
+            right: '16px',
+            width: 'min(280px, calc(100vw - 32px))',
             padding: '16px',
             borderRadius: '20px',
-            zIndex: 50,
+            zIndex: 100,
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px'
+            gap: '12px',
+            backgroundColor: 'var(--surface-color)',
+            border: '1px solid var(--border-color)',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
           }}
         >
           {/* Header */}
