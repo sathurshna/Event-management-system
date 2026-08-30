@@ -66,7 +66,7 @@ const EventsList: React.FC = () => {
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Events Dashboard</h1>
+          <h1 className="page-title">Events Dashboard</h1>
           <p className="text-muted">Discover new events and manage your own.</p>
         </div>
         <Link to="/events/create" style={{ textDecoration: 'none' }}>
