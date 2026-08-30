@@ -117,12 +117,12 @@ const EventsList: React.FC = () => {
 
       {/* Event Grid */}
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
           {[1, 2, 3, 4, 5, 6].map((n) => <EventSkeleton key={n} />)}
         </div>
       ) : events.length > 0 ? (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
             {events.map((event) => (
               <EventCard key={event.id} {...event} onClick={() => navigate(`/events/${event.id}`)} />
             ))}
