@@ -324,6 +324,7 @@ h4 {
   transition: background-color 0.2s ease;
 }
 /* Responsive layout adjustments for mobile */
+html,
 body {
   overflow-x: hidden;
 }
