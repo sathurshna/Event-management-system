@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
               padding: '12px 16px',
               borderRadius: '16px',
               textDecoration: 'none',
-              color: isActive ? 'white' : 'var(--text-muted)',
+              color: isActive ? 'var(--text-main)' : 'var(--text-muted)',
               background: isActive ? 'var(--primary-color)' : 'transparent',
               border: 'none',
               fontWeight: isActive ? 600 : 500,

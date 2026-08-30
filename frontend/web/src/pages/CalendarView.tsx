@@ -131,7 +131,7 @@ const CalendarView: React.FC = () => {
           </button>
         </div>
 
-        <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '24px', padding: '4px' }}>
+        <div style={{ display: 'flex', backgroundColor: 'var(--overlay-light)', borderRadius: '24px', padding: '4px' }}>
           {[
             { id: 'timeGridDay', label: 'Day' },
             { id: 'timeGridWeek', label: 'Week' },
@@ -141,7 +141,7 @@ const CalendarView: React.FC = () => {
               key={view.id}
               onClick={() => changeView(view.id)}
               style={{
-                background: currentView === view.id ? 'rgba(255,255,255,0.15)' : 'none',
+                background: currentView === view.id ? 'var(--overlay-medium)' : 'none',
                 border: 'none',
                 color: currentView === view.id ? 'var(--text-main)' : 'var(--text-muted)',
                 padding: '6px 16px',
@@ -166,13 +166,13 @@ const CalendarView: React.FC = () => {
           <span style={{ background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{title.split(' ')[0]}</span> <span style={{ fontWeight: '400', color: 'var(--text-muted)' }}>{title.split(' ')[1]}</span>
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <button onClick={() => navigateCalendar('prev')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <button onClick={() => navigateCalendar('prev')} style={{ background: 'var(--overlay-medium)', border: 'none', color: 'var(--text-main)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <ChevronLeft size={20} />
           </button>
-          <button onClick={() => navigateCalendar('today')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '6px 16px', borderRadius: '16px', cursor: 'pointer' }}>
+          <button onClick={() => navigateCalendar('today')} style={{ background: 'var(--overlay-medium)', border: 'none', color: 'var(--text-main)', padding: '6px 16px', borderRadius: '16px', cursor: 'pointer' }}>
             Today
           </button>
-          <button onClick={() => navigateCalendar('next')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <button onClick={() => navigateCalendar('next')} style={{ background: 'var(--overlay-medium)', border: 'none', color: 'var(--text-main)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <ChevronRight size={20} />
           </button>
         </div>
@@ -299,15 +299,15 @@ const CalendarView: React.FC = () => {
                   key={e.id}
                   onClick={() => setSelectedEvent(e)}
                   style={{
-                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    backgroundColor: 'var(--overlay-subtle)',
                     padding: '16px',
                     borderRadius: '12px',
                     borderLeft: `4px solid ${getEventColor(e)}`,
                     cursor: 'pointer',
                     transition: 'background-color 0.2s'
                   }}
-                  onMouseOver={(ev) => ev.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)'}
-                  onMouseOut={(ev) => ev.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'}
+                  onMouseOver={(ev) => ev.currentTarget.style.backgroundColor = 'var(--overlay-hover)'}
+                  onMouseOut={(ev) => ev.currentTarget.style.backgroundColor = 'var(--overlay-subtle)'}
                 >
                   <h3 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', color: 'var(--text-main)' }}>{e.title}</h3>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>

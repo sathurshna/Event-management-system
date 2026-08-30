@@ -20,7 +20,7 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
   const isPast = new Date(date) < new Date();
   let badgeColor = 'var(--primary-color)';
   let badgeText = '';
-  let badgeTextColor = 'white';
+  let badgeTextColor = 'var(--text-main)';
 
   if (isPast) {
     badgeColor = '#4B5563'; // Gray
@@ -28,7 +28,7 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
   } else if (is_public) {
     badgeColor = '#EAB308'; // Yellow
     badgeText = 'Public';
-    badgeTextColor = '#000000'; // Dark text for yellow
+    badgeTextColor = 'var(--bg-color)'; // Dark text for yellow
   } else {
     badgeColor = '#D946EF'; // Magenta
     badgeText = 'Private';

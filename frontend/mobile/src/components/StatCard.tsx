@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#12141c',
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: colors.overlayLight,
     padding: 16,
     position: 'relative',
     overflow: 'hidden',

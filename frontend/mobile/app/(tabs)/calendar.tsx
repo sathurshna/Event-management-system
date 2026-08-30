@@ -4,7 +4,7 @@ import { Calendar } from 'react-native-calendars';
 import { useRouter } from 'expo-router';
 import { ChevronDown, ChevronLeft, ChevronRight, Plus } from 'lucide-react-native';
 import api from '../../src/utils/api';
-import { colors, globalStyles, spacing, borderRadius } from '../../src/theme';
+import { spacing, borderRadius } from '../../src/theme';
 
 interface EventData {
   id: string;
@@ -16,13 +16,13 @@ interface EventData {
   location?: string;
 }
 
-const getEventColor = (event: EventData) => {
+const getEventColor = (event: EventData, colors: any) => {
   const eventDate = new Date(event.date);
   const now = new Date();
   
-  if (eventDate < now) return colors.textMuted; // Muted for past
-  if (event.is_public) return colors.success; // Green for public
-  return colors.primary; // Purple for private
+  if (eventDate < now) return '#9ca3af'; // Gray for past
+  if (event.is_public) return '#facc15'; // Yellow for public
+  return '#e879f9'; // Pink/Magenta for private
 };
 
 const toDateString = (date: Date | string) => {
@@ -30,7 +30,7 @@ const toDateString = (date: Date | string) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-const CustomDay = ({ date, state, marking, onPress }: any) => {
+const CustomDay = ({ date, state, marking, onPress, colors }: any) => {
   const isSelected = marking?.selected;
   const isToday = state === 'today';
   const dots = marking?.dots || [];
@@ -44,7 +44,7 @@ const CustomDay = ({ date, state, marking, onPress }: any) => {
         height: 38,
         padding: 4,
         backgroundColor: isSelected ? colors.surfaceSecondary : 'transparent',
-        borderWidth: 1,
+        borderRadius: 19, // Circular indicator
         justifyContent: 'center',
         alignItems: 'center',
       }}
@@ -68,7 +68,7 @@ const CustomDay = ({ date, state, marking, onPress }: any) => {
       
       {/* Date Text */}
       <Text style={{
-        color: isSelected ? 'white' : (isToday ? colors.primary : colors.textMain),
+        color: isSelected ? colors.primary : (isToday ? colors.textMain : colors.textMain),
         fontWeight: isSelected || isToday ? 'bold' : 'normal',
         fontSize: 15,
       }}>
@@ -81,7 +81,11 @@ const CustomDay = ({ date, state, marking, onPress }: any) => {
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 
+import { useTheme } from '../../src/context/ThemeContext';
+
 export default function CalendarScreen() {
+  const { colors, theme, globalStyles } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -129,7 +133,7 @@ export default function CalendarScreen() {
         marks[dateStr] = { dots: [] };
       }
       if (marks[dateStr].dots.length < 3) {
-        marks[dateStr].dots.push({ key: event.id, color: getEventColor(event) });
+        marks[dateStr].dots.push({ key: event.id, color: getEventColor(event, colors) });
       }
     });
 
@@ -176,7 +180,7 @@ export default function CalendarScreen() {
   };
 
   const renderEvent = ({ item }: { item: EventData }) => {
-    const color = getEventColor(item);
+    const color = getEventColor(item, colors);
     const eventTime = new Date(item.date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     
     return (
@@ -242,10 +246,10 @@ export default function CalendarScreen() {
           </Text>
           <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center', paddingRight: spacing.sm }}>
             <TouchableOpacity onPress={() => changeMonth(-1)} style={{ padding: 4 }}>
-              <ChevronLeft size={28} color="white" />
+              <ChevronLeft size={28} color={colors.textMain} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => changeMonth(1)} style={{ padding: 4 }}>
-              <ChevronRight size={28} color="white" />
+              <ChevronRight size={28} color={colors.textMain} />
             </TouchableOpacity>
           </View>
         </View>
@@ -276,12 +280,12 @@ export default function CalendarScreen() {
       {/* Calendar Component */}
       <Calendar
         current={currentMonth.toISOString().split('T')[0]}
-        key={currentMonth.toISOString()} 
+        key={currentMonth.toISOString() + theme} 
         onDayPress={(day: any) => setSelectedDate(day.dateString)}
         markedDates={markedDates}
         enableSwipeMonths={true}
         hideArrows={true}
-        dayComponent={CustomDay}
+        dayComponent={(props: any) => <CustomDay {...props} colors={colors} />}
         onMonthChange={(month: any) => {
           const newMonth = new Date(month.timestamp);
           setCurrentMonth(newMonth);
@@ -331,7 +335,7 @@ export default function CalendarScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   center: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -355,7 +359,7 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: 'white',
+    color: colors.textMain,
     marginTop: 10,
   },
   bottomSheet: {
@@ -365,7 +369,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingTop: 12,
     marginTop: 10,
-    shadowColor: '#000',
+    shadowColor: colors.overlayMedium,
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -424,7 +428,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   yearItemSelected: {
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+    backgroundColor: colors.overlayLight,
   },
   yearItemText: {
     color: colors.textMain,
@@ -439,7 +443,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+    borderBottomColor: colors.overlayLight,
   },
   timelineTimeColumn: {
     width: 85,
@@ -460,7 +464,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: spacing.md,
     borderLeftWidth: 1,
-    borderLeftColor: 'rgba(255,255,255,0.1)',
+    borderLeftColor: colors.overlayMedium,
   },
   timelineDot: {
     width: 4,

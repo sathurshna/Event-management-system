@@ -12,7 +12,7 @@ export default function SettingsPage() {
   const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
-    const isLight = document.body.classList.contains('light-mode');
+    const isLight = document.documentElement.classList.contains('light-mode');
     setDarkMode(!isLight);
   }, []);
 
@@ -42,10 +42,10 @@ export default function SettingsPage() {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
     if (newDarkMode) {
-      document.body.classList.remove('light-mode');
+      document.documentElement.classList.remove('light-mode');
       localStorage.setItem('theme', 'dark');
     } else {
-      document.body.classList.add('light-mode');
+      document.documentElement.classList.add('light-mode');
       localStorage.setItem('theme', 'light');
     }
   };
@@ -76,7 +76,7 @@ export default function SettingsPage() {
           width: '20px',
           height: '20px',
           borderRadius: '50%',
-          background: '#fff',
+          background: 'var(--text-main)',
           position: 'absolute',
           top: '2px',
           left: value ? '26px' : '2px',

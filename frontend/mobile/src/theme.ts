@@ -10,20 +10,28 @@ export const darkColors = {
   success: '#22C55E',
   warning: '#F59E0B',
   error: '#EF4444',
+  overlaySubtle: 'rgba(255, 255, 255, 0.02)',
+  overlayLight: 'rgba(255, 255, 255, 0.05)',
+  overlayMedium: 'rgba(255, 255, 255, 0.1)',
+  overlayHover: 'rgba(255, 255, 255, 0.08)',
 };
 
 export const lightColors = {
-  background: '#F8FAFC',
+  background: '#F6F7FB',
   surface: '#FFFFFF',
-  surfaceSecondary: '#F1F5F9',
-  primary: '#6366F1', // keep brand primary
-  primaryLight: '#818CF8',
-  textMain: '#0F172A',
-  textMuted: '#64748B',
+  surfaceSecondary: '#EEF2FF',
+  primary: '#6366F1',
+  primaryLight: '#4F46E5',
+  textMain: '#172033',
+  textMuted: '#94A3B8',
   border: '#E2E8F0',
   success: '#22C55E',
   warning: '#F59E0B',
   error: '#EF4444',
+  overlaySubtle: 'rgba(0, 0, 0, 0.02)',
+  overlayLight: 'rgba(0, 0, 0, 0.05)',
+  overlayMedium: 'rgba(0, 0, 0, 0.08)',
+  overlayHover: 'rgba(0, 0, 0, 0.04)',
 };
 
 // Fallback legacy export (will be removed as files are updated, but kept so TS doesn't immediately crash everything)
@@ -64,9 +72,9 @@ export const createGlobalStyles = (themeColors: typeof darkColors) => ({
     backgroundColor: themeColors.surfaceSecondary,
     borderWidth: 1,
     borderColor: themeColors.border,
-    borderRadius: borderRadius.md,
+    borderRadius: 12,
     paddingHorizontal: spacing.md,
-    height: 50,
+    height: 52,
     marginBottom: spacing.md,
   },
   input: {
@@ -77,8 +85,8 @@ export const createGlobalStyles = (themeColors: typeof darkColors) => ({
   },
   button: {
     backgroundColor: themeColors.primary,
-    height: 50,
-    borderRadius: borderRadius.md,
+    height: 52,
+    borderRadius: 12,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
     marginTop: spacing.sm,

@@ -95,23 +95,30 @@ export default function NotificationsScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.borderGlass }}>
+      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.border }}>
         {['All', 'Unread'].map((filter) => (
           <TouchableOpacity
             key={filter}
             onPress={() => setActiveFilter(filter)}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 20,
-              backgroundColor: activeFilter === filter ? colors.surfaceSecondary : 'transparent',
+            style={[{
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              borderRadius: 24,
+              backgroundColor: activeFilter === filter ? colors.primary : colors.surfaceSecondary,
               borderWidth: 1,
-              borderColor: activeFilter === filter ? colors.primary : colors.borderGlass,
-            }}
+              borderColor: activeFilter === filter ? colors.primary : colors.border,
+            }, activeFilter === filter && {
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 4,
+            }]}
           >
             <Text style={{
-              color: activeFilter === filter ? colors.primary : colors.textMuted,
-              fontWeight: activeFilter === filter ? 'bold' : '600'
+              color: activeFilter === filter ? 'white' : colors.textMain,
+              fontWeight: '700',
+              fontSize: 14
             }}>
               {filter}
             </Text>
@@ -139,27 +146,31 @@ export default function NotificationsScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
           contentContainerStyle={{ padding: spacing.lg, paddingBottom: 100 }}
           ListEmptyComponent={
-            <View style={{ padding: spacing.lg, alignItems: 'center', backgroundColor: colors.surfaceGlass, borderRadius: spacing.md }}>
+            <View style={{ padding: spacing.lg, alignItems: 'center', backgroundColor: colors.surfaceSecondary, borderRadius: spacing.md }}>
               <Text style={{ color: colors.textMain, fontSize: 16 }}>No notifications yet.</Text>
             </View>
           }
           renderItem={({ item }) => (
             <TouchableOpacity 
               onPress={() => handleNotificationClick(item)}
-              style={[
-                globalStyles.glassCard, 
-                { 
+              style={[{ 
                   marginBottom: spacing.md, 
-                  marginHorizontal: 0,
-                  backgroundColor: item.is_read ? colors.surface : colors.surfaceSecondary,
-                  borderColor: item.is_read ? colors.borderGlass : colors.primary
-                }
-              ]}
+                  backgroundColor: item.is_read ? colors.surface : 'rgba(99, 102, 241, 0.05)',
+                  borderColor: item.is_read ? colors.border : 'rgba(99, 102, 241, 0.3)',
+                  borderWidth: 1,
+                  borderRadius: 16,
+                  padding: 16,
+                  shadowColor: colors.overlayMedium,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+                  elevation: 2,
+              }]}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Text style={{ 
                   flex: 1,
-                  color: item.is_read ? colors.textMain : 'white', 
+                  color: colors.textMain, 
                   fontSize: 16, 
                   fontWeight: item.is_read ? 'normal' : 'bold',
                   marginBottom: 8

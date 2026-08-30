@@ -133,7 +133,7 @@ const RsvpSection: React.FC<RsvpSectionProps> = ({ eventId, isOwner, hostId }) =
                   <button key={s} onClick={() => setPendingStatus(s)} className="btn-primary" style={{
                     flex: 1,
                     backgroundColor: pendingStatus === s ? (s === 'ATTENDING' ? 'var(--primary-color)' : s === 'MAYBE' ? '#f59e0b' : '#ef4444') : 'var(--surface-color)',
-                    color: pendingStatus === s ? 'white' : 'var(--text-main)',
+                    color: pendingStatus === s ? 'var(--text-main)' : 'var(--text-main)',
                     border: '1px solid var(--border-color)',
                   }}>
                     {s === 'ATTENDING' ? 'Yes 🎉' : s === 'MAYBE' ? 'Maybe 🤔' : "Can't go 😔"}
@@ -147,7 +147,7 @@ const RsvpSection: React.FC<RsvpSectionProps> = ({ eventId, isOwner, hostId }) =
                 placeholder={pendingStatus !== 'ATTENDING' ? 'Add a note (optional) — e.g. "Out of town that weekend"' : 'Add a note (optional)'}
                 className="input-field"
                 rows={3}
-                style={{ resize: 'vertical', marginBottom: '12px', backgroundColor: 'rgba(0,0,0,0.2)' }}
+                style={{ resize: 'vertical', marginBottom: '12px', backgroundColor: 'var(--shadow-color)' }}
               />
 
               <div style={{ display: 'flex', gap: '12px' }}>
@@ -171,7 +171,7 @@ const RsvpSection: React.FC<RsvpSectionProps> = ({ eventId, isOwner, hostId }) =
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
           {attending.map(a => (
-            <div key={a.rsvp_id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+            <div key={a.rsvp_id} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px', backgroundColor: 'var(--overlay-subtle)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
               {a.avatar ? (
                 <img src={a.avatar} alt={a.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
               ) : (

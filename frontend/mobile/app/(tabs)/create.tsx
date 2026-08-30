@@ -106,15 +106,14 @@ export default function CreateEventMobile() {
             onPress={handlePickImage}
             style={{
               height: 180,
-              borderRadius: borderRadius.lg,
-              borderRadius: borderRadius.md,
+              borderRadius: 16,
               borderWidth: 2,
-              borderColor: colors.border,
+              borderColor: 'rgba(99, 102, 241, 0.3)', // dashed purple/gray
               borderStyle: 'dashed',
               overflow: 'hidden',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: colors.surface,
+              backgroundColor: 'rgba(99, 102, 241, 0.05)', // soft purple tint
             }}
           >
             {formData.coverImage ? (
@@ -124,23 +123,23 @@ export default function CreateEventMobile() {
                   style={{ width: '100%', height: '100%', position: 'absolute' }}
                   resizeMode="cover"
                 />
-                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: borderRadius.md, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Camera color="white" size={18} />
-                  <Text style={{ color: 'white', fontWeight: '600' }}>Change Image</Text>
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Camera color="white" size={16} />
+                  <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>Change Image</Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => handleChange('coverImage', null)}
-                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: colors.surfaceSecondary, padding: 6, borderRadius: 100 }}
+                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', padding: 6, borderRadius: 100 }}
                 >
                   <X color="white" size={16} />
                 </TouchableOpacity>
               </>
             ) : (
-              <View style={{ alignItems: 'center', gap: 8 }}>
-                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 16, borderRadius: 100 }}>
+              <View style={{ alignItems: 'center', gap: 12 }}>
+                <View style={{ backgroundColor: colors.surface, padding: 16, borderRadius: 100, shadowColor: colors.primary, shadowOpacity: 0.1, shadowRadius: 10, elevation: 2 }}>
                   <Camera color={colors.primary} size={28} />
                 </View>
-                <Text style={{ color: colors.textMuted, fontSize: 14 }}>Tap to select a cover photo</Text>
+                <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 15 }}>Upload Cover Photo</Text>
               </View>
             )}
           </TouchableOpacity>

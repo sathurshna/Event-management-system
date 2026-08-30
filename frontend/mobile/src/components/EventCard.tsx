@@ -24,19 +24,21 @@ export default function EventCard({ id, title, description, date, location, cove
   });
 
   const isPast = new Date(date) < new Date();
-  let badgeColor = colors.primary;
+  let badgeBackgroundColor = colors.primary;
   let badgeText = '';
   let badgeTextColor = '#ffffff';
 
   if (isPast) {
-    badgeColor = '#4B5563'; // Gray
+    badgeBackgroundColor = colors.border;
+    badgeTextColor = colors.textMuted;
     badgeText = 'Past';
   } else if (is_public) {
-    badgeColor = '#EAB308'; // Yellow
+    badgeBackgroundColor = '#FEF3C7'; // Soft yellow
+    badgeTextColor = '#92400E'; // Dark warm text
     badgeText = 'Public';
-    badgeTextColor = '#000000'; // Dark text for yellow
   } else {
-    badgeColor = '#D946EF'; // Magenta
+    badgeBackgroundColor = '#F3E8FF'; // Soft purple
+    badgeTextColor = '#701A75'; // Dark purple
     badgeText = 'Private';
   }
 
@@ -44,7 +46,20 @@ export default function EventCard({ id, title, description, date, location, cove
     <TouchableOpacity 
       activeOpacity={0.8}
       onPress={() => router.push(`/(tabs)/event/${id}`)}
-      style={[globalStyles.glassCard, { padding: 0, overflow: 'hidden', marginBottom: spacing.md, marginHorizontal: 0 }]}
+      style={[{
+        backgroundColor: colors.surface,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: colors.border,
+        overflow: 'hidden',
+        marginBottom: spacing.lg,
+        shadowColor: colors.overlayMedium,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
+        opacity: isPast ? 0.7 : 1
+      }]}
     >
       <View style={{ height: 180, position: 'relative' }}>
         <Image
@@ -55,14 +70,14 @@ export default function EventCard({ id, title, description, date, location, cove
         {/* Date Badge */}
         <View style={{
           position: 'absolute', top: 12, left: 12,
-          backgroundColor: 'rgba(8,11,18,0.7)', padding: 8, borderRadius: 12,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: 8, borderRadius: 12,
           alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(10px)'
+          borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)'
         }}>
-          <Text style={{ color: colors.textMain, fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>
+          <Text style={{ color: '#6366F1', fontSize: 10, fontWeight: '800', textTransform: 'uppercase' }}>
             {new Date(date).toLocaleString('default', { month: 'short' })}
           </Text>
-          <Text style={{ color: colors.textMain, fontSize: 18, fontWeight: 'bold' }}>
+          <Text style={{ color: '#172033', fontSize: 18, fontWeight: '900' }}>
             {new Date(date).getDate()}
           </Text>
         </View>
@@ -71,10 +86,10 @@ export default function EventCard({ id, title, description, date, location, cove
         {(is_public !== undefined || isPast) && (
           <View style={{
             position: 'absolute', top: 12, right: 12,
-            backgroundColor: badgeColor,
+            backgroundColor: badgeBackgroundColor,
             paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20
           }}>
-            <Text style={{ color: badgeTextColor, fontSize: 12, fontWeight: 'bold' }}>
+            <Text style={{ color: badgeTextColor, fontSize: 12, fontWeight: '800' }}>
               {badgeText}
             </Text>
           </View>
@@ -82,11 +97,11 @@ export default function EventCard({ id, title, description, date, location, cove
       </View>
 
       {/* Event Details */}
-      <View style={{ padding: 16 }}>
-        <Text style={{ color: colors.textMain, fontSize: 20, fontWeight: 'bold', marginBottom: 6 }} numberOfLines={1}>
+      <View style={{ padding: 18 }}>
+        <Text style={{ color: colors.textMain, fontSize: 20, fontWeight: '800', marginBottom: 6, letterSpacing: -0.3 }} numberOfLines={1}>
           {title}
         </Text>
-        <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: 16 }} numberOfLines={2}>
+        <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: 16, lineHeight: 20 }} numberOfLines={2}>
           {description || 'No description provided.'}
         </Text>
 

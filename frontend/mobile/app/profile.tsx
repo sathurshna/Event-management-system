@@ -125,10 +125,10 @@ export default function ProfileScreen() {
           <View style={{
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            backgroundColor: colors.overlaySubtle,
             borderRadius: 12,
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.05)',
+            borderColor: colors.overlayLight,
             paddingHorizontal: 16,
             height: 56
           }}>

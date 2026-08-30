@@ -91,7 +91,7 @@ const InviteAccept: React.FC = () => {
           <strong>{invite.inviter_name}</strong> has invited you to attend <strong>{invite.title}</strong>.
         </p>
 
-        <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
+        <div style={{ backgroundColor: 'var(--overlay-subtle)', padding: '16px', borderRadius: '8px', marginBottom: '32px', textAlign: 'left' }}>
           <p style={{ margin: '0 0 8px 0', fontSize: '0.875rem' }}><span className="text-muted">Date:</span> {new Date(invite.date).toLocaleDateString()}</p>
           <p style={{ margin: 0, fontSize: '0.875rem' }}><span className="text-muted">Location:</span> {invite.location}</p>
         </div>
