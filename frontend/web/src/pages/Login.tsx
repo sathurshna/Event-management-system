@@ -35,7 +35,7 @@ const Login: React.FC = () => {
       <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, var(--primary-color) 0%, transparent 70%)', opacity: 0.15, filter: 'blur(60px)', zIndex: 0 }} />
       <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, var(--secondary-color) 0%, transparent 70%)', opacity: 0.15, filter: 'blur(60px)', zIndex: 0 }} />
 
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '420px', padding: '2.5rem 2rem', zIndex: 1, border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)' }}>
+      <div className="glass-panel auth-panel" style={{ width: '100%', maxWidth: '420px', padding: '2.5rem 2rem', zIndex: 1, border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '20px', background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))', marginBottom: '16px', boxShadow: '0 8px 16px rgba(99, 102, 241, 0.3)' }}>
             <LogIn size={32} color="white" />

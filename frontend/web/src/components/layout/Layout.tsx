@@ -32,7 +32,7 @@ const Layout: React.FC = () => {
       <div className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <Topbar toggleSidebar={toggleSidebar} />
         
-        <main style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+        <main className="main-area" style={{ flex: 1, overflowY: 'auto' }}>
           <Outlet />
         </main>
       </div>
