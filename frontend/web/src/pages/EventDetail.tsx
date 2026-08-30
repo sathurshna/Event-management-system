@@ -90,7 +90,7 @@ const EventDetail: React.FC = () => {
             style={{
               position: 'absolute', top: '16px', right: '16px',
               backgroundColor: event.is_public ? 'var(--secondary-color)' : 'var(--primary-color)',
-              color: 'white', padding: '6px 16px', borderRadius: '100px', fontSize: '0.875rem', fontWeight: 600,
+              color: 'var(--text-main)', padding: '6px 16px', borderRadius: '100px', fontSize: '0.875rem', fontWeight: 600,
               border: 'none', cursor: isOwner ? 'pointer' : 'default',
               display: 'flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
@@ -128,7 +128,7 @@ const EventDetail: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px', padding: '24px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px', padding: '24px', backgroundColor: 'var(--overlay-subtle)', borderRadius: 'var(--radius-md)' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div style={{ padding: '12px', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', marginRight: '16px' }}>
                 <Calendar size={24} color="var(--primary-color)" />

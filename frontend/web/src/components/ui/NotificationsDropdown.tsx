@@ -139,7 +139,7 @@ const NotificationsDropdown = () => {
             top: '-5px',
             right: '-5px',
             backgroundColor: '#ef4444',
-            color: 'white',
+            color: 'var(--text-main)',
             borderRadius: '50%',
             width: '18px',
             height: '18px',
@@ -216,7 +216,7 @@ const NotificationsDropdown = () => {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <span style={{ 
-                      color: notif.is_read ? 'var(--text-main)' : 'white', 
+                      color: notif.is_read ? 'var(--text-main)' : 'var(--text-main)', 
                       fontSize: '14px',
                       fontWeight: notif.is_read ? 'normal' : '500'
                     }}>

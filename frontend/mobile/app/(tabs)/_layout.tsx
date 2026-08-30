@@ -12,10 +12,15 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: colors.surfaceSecondary,
+          backgroundColor: colors.surface,
           borderTopColor: colors.border,
           height: 60,
           borderTopWidth: 1,
+          shadowColor: colors.overlayMedium,
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 10,
         },
       }}
     >

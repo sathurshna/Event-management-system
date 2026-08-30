@@ -145,7 +145,7 @@ export default function Profile() {
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            background: 'rgba(255, 255, 255, 0.02)', 
+            background: 'var(--overlay-subtle)', 
             border: '1px solid var(--border-color-glass)', 
             borderRadius: '12px', 
             padding: '0 16px',

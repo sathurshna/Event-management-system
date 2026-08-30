@@ -34,7 +34,7 @@ export default function Login() {
       <View style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, borderRadius: 100, backgroundColor: colors.primary, opacity: 0.15, transform: [{ scale: 2 }] }} />
       <View style={{ position: 'absolute', bottom: -50, left: -50, width: 250, height: 250, borderRadius: 125, backgroundColor: colors.secondary || colors.primary, opacity: 0.1, transform: [{ scale: 2 }] }} />
 
-      <View style={[globalStyles.glassCard, { borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, elevation: 10, shadowColor: colors.primary, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 20 }]}>
+      <View style={[globalStyles.glassCard, { borderColor: colors.overlayMedium, borderWidth: 1, elevation: 10, shadowColor: colors.primary, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 20 }]}>
         
         <View style={{ alignItems: 'center', marginBottom: 32 }}>
           <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginBottom: 16, shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 12 }}>
@@ -50,7 +50,7 @@ export default function Login() {
 
         {error ? <Text style={{ color: colors.error, marginBottom: 16, textAlign: 'center', fontWeight: '500' }}>{error}</Text> : null}
 
-        <View style={[globalStyles.inputContainer, { backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)', borderWidth: 1 }]}>
+        <View style={[globalStyles.inputContainer, { backgroundColor: colors.overlayMedium, borderColor: colors.overlayLight, borderWidth: 1 }]}>
           <Mail color={colors.textMuted} size={20} />
           <TextInput
             style={[globalStyles.input, { color: colors.textMain }]}
@@ -63,7 +63,7 @@ export default function Login() {
           />
         </View>
 
-        <View style={[globalStyles.inputContainer, { backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.05)', borderWidth: 1, marginTop: 16 }]}>
+        <View style={[globalStyles.inputContainer, { backgroundColor: colors.overlayMedium, borderColor: colors.overlayLight, borderWidth: 1, marginTop: 16 }]}>
           <Lock color={colors.textMuted} size={20} />
           <TextInput
             style={[globalStyles.input, { color: colors.textMain }]}

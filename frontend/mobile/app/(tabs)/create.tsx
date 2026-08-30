@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert, Platform, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert, Platform, Image, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -12,7 +12,7 @@ export default function CreateEventMobile() {
   const router = useRouter();
   const { date } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
-  const { colors, globalStyles } = useTheme();
+  const { colors, globalStyles, theme } = useTheme();
   
   // Parse date param if provided safely to avoid timezone offset issues
   let initialDate = new Date();
@@ -31,6 +31,23 @@ export default function CreateEventMobile() {
     isPublic: false,
     coverImage: null as string | null,
   });
+
+  useEffect(() => {
+    if (date && typeof date === 'string') {
+      const parts = date.split('-');
+      if (parts.length === 3) {
+        const newDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        setFormData(prev => {
+          const merged = new Date(prev.date);
+          merged.setFullYear(newDate.getFullYear());
+          merged.setMonth(newDate.getMonth());
+          merged.setDate(newDate.getDate());
+          return { ...prev, date: merged };
+        });
+      }
+    }
+  }, [date]);
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -106,15 +123,14 @@ export default function CreateEventMobile() {
             onPress={handlePickImage}
             style={{
               height: 180,
-              borderRadius: borderRadius.lg,
-              borderRadius: borderRadius.md,
+              borderRadius: 16,
               borderWidth: 2,
-              borderColor: colors.border,
+              borderColor: 'rgba(99, 102, 241, 0.3)', // dashed purple/gray
               borderStyle: 'dashed',
               overflow: 'hidden',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: colors.surface,
+              backgroundColor: 'rgba(99, 102, 241, 0.05)', // soft purple tint
             }}
           >
             {formData.coverImage ? (
@@ -124,23 +140,23 @@ export default function CreateEventMobile() {
                   style={{ width: '100%', height: '100%', position: 'absolute' }}
                   resizeMode="cover"
                 />
-                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 10, borderRadius: borderRadius.md, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Camera color="white" size={18} />
-                  <Text style={{ color: 'white', fontWeight: '600' }}>Change Image</Text>
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Camera color="white" size={16} />
+                  <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>Change Image</Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => handleChange('coverImage', null)}
-                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: colors.surfaceSecondary, padding: 6, borderRadius: 100 }}
+                  style={{ position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', padding: 6, borderRadius: 100 }}
                 >
                   <X color="white" size={16} />
                 </TouchableOpacity>
               </>
             ) : (
-              <View style={{ alignItems: 'center', gap: 8 }}>
-                <View style={{ backgroundColor: colors.surfaceSecondary, padding: 16, borderRadius: 100 }}>
+              <View style={{ alignItems: 'center', gap: 12 }}>
+                <View style={{ backgroundColor: colors.surface, padding: 16, borderRadius: 100, shadowColor: colors.primary, shadowOpacity: 0.1, shadowRadius: 10, elevation: 2 }}>
                   <Camera color={colors.primary} size={28} />
                 </View>
-                <Text style={{ color: colors.textMuted, fontSize: 14 }}>Tap to select a cover photo</Text>
+                <Text style={{ color: colors.primary, fontWeight: '600', fontSize: 15 }}>Upload Cover Photo</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -221,40 +237,86 @@ export default function CreateEventMobile() {
             </View>
           </View>
 
-          {showDatePicker && (
-            <DateTimePicker
-              value={formData.date}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(false);
-                if (selectedDate) {
-                  const merged = new Date(formData.date);
-                  merged.setFullYear(selectedDate.getFullYear());
-                  merged.setMonth(selectedDate.getMonth());
-                  merged.setDate(selectedDate.getDate());
-                  handleChange('date', merged);
-                }
-              }}
-            />
-          )}
-
-          {showTimePicker && (
-            <DateTimePicker
-              value={formData.date}
-              mode="time"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowTimePicker(false);
-                if (selectedDate) {
-                  const merged = new Date(formData.date);
-                  merged.setHours(selectedDate.getHours());
-                  merged.setMinutes(selectedDate.getMinutes());
-                  merged.setSeconds(0);
-                  handleChange('date', merged);
-                }
-              }}
-            />
+          {Platform.OS === 'ios' ? (
+            <Modal visible={showDatePicker || showTimePicker} transparent animationType="slide">
+              <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <TouchableOpacity 
+                  style={{ flex: 1 }} 
+                  activeOpacity={1} 
+                  onPress={() => { setShowDatePicker(false); setShowTimePicker(false); }} 
+                />
+                <View style={{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 }}>
+                  <View style={{ width: 40, height: 4, backgroundColor: colors.border, borderRadius: 2, alignSelf: 'center', marginBottom: 20 }} />
+                  <DateTimePicker
+                    value={formData.date}
+                    mode={showDatePicker ? 'date' : 'time'}
+                    display="spinner"
+                    themeVariant={theme}
+                    textColor={colors.textMain}
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        const merged = new Date(formData.date);
+                        if (showDatePicker) {
+                          merged.setFullYear(selectedDate.getFullYear());
+                          merged.setMonth(selectedDate.getMonth());
+                          merged.setDate(selectedDate.getDate());
+                        } else {
+                          merged.setHours(selectedDate.getHours());
+                          merged.setMinutes(selectedDate.getMinutes());
+                          merged.setSeconds(0);
+                        }
+                        handleChange('date', merged);
+                      }
+                    }}
+                  />
+                  <TouchableOpacity 
+                    onPress={() => { setShowDatePicker(false); setShowTimePicker(false); }}
+                    style={{ marginTop: 24, backgroundColor: colors.primary, padding: 16, borderRadius: 16, alignItems: 'center' }}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Confirm</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          ) : (
+            <>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={formData.date}
+                  mode="date"
+                  display="default"
+                  themeVariant={theme}
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      const merged = new Date(formData.date);
+                      merged.setFullYear(selectedDate.getFullYear());
+                      merged.setMonth(selectedDate.getMonth());
+                      merged.setDate(selectedDate.getDate());
+                      handleChange('date', merged);
+                    }
+                  }}
+                />
+              )}
+              {showTimePicker && (
+                <DateTimePicker
+                  value={formData.date}
+                  mode="time"
+                  display="default"
+                  themeVariant={theme}
+                  onChange={(event, selectedDate) => {
+                    setShowTimePicker(false);
+                    if (selectedDate) {
+                      const merged = new Date(formData.date);
+                      merged.setHours(selectedDate.getHours());
+                      merged.setMinutes(selectedDate.getMinutes());
+                      merged.setSeconds(0);
+                      handleChange('date', merged);
+                    }
+                  }}
+                />
+              )}
+            </>
           )}
 
           <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: spacing.sm }}>Location *</Text>

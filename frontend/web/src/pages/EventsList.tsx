@@ -87,7 +87,7 @@ const EventsList: React.FC = () => {
             placeholder="Search events by title or description..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ paddingLeft: '40px', margin: 0, backgroundColor: 'rgba(0,0,0,0.2)' }}
+            style={{ paddingLeft: '40px', margin: 0, backgroundColor: 'var(--shadow-color)' }}
           />
         </div>
         
@@ -103,8 +103,8 @@ const EventsList: React.FC = () => {
                 cursor: 'pointer',
                 fontWeight: 600,
                 fontSize: '0.875rem',
-                backgroundColor: category === cat ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
-                color: category === cat ? 'white' : 'var(--text-muted)',
+                backgroundColor: category === cat ? 'var(--primary-color)' : 'var(--overlay-light)',
+                color: category === cat ? 'var(--text-main)' : 'var(--text-muted)',
                 transition: 'all 0.2s',
                 whiteSpace: 'nowrap',
               }}

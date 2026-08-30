@@ -101,20 +101,31 @@ export default function Dashboard() {
     <View style={{ marginBottom: spacing.lg }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xl }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: colors.textMain, fontSize: 26, fontWeight: 'bold', marginBottom: 4 }} numberOfLines={1}>Welcome back, {user?.name?.split(' ')[0]} 👋</Text>
-          <Text style={{ color: colors.textMuted, fontSize: 14 }}>Let's make today memorable.</Text>
+          <Text style={{ color: colors.textMain, fontSize: 28, fontWeight: '900', marginBottom: 4 }} numberOfLines={1}>Welcome back, {user?.name?.split(' ')[0]} 👋</Text>
+          <Text style={{ color: colors.textMuted, fontSize: 15, fontWeight: '500' }}>Let's make today memorable.</Text>
         </View>
         
         <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
           <NotificationBell />
           <TouchableOpacity 
             onPress={openMenu}
-            style={{ marginLeft: 12, width: 36, height: 36, borderRadius: 18, overflow: 'hidden', backgroundColor: colors.surfaceSecondary, justifyContent: 'center', alignItems: 'center' }}
+            style={{ 
+              marginLeft: 12, 
+              width: 40, 
+              height: 40, 
+              borderRadius: 20, 
+              overflow: 'hidden', 
+              backgroundColor: colors.surfaceSecondary, 
+              justifyContent: 'center', 
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: colors.border
+            }}
           >
             {user?.avatar ? (
               <Image source={{ uri: user.avatar }} style={{ width: '100%', height: '100%' }} />
             ) : (
-              <Text style={{ color: colors.textMain, fontWeight: 'bold' }}>{user?.name?.[0]?.toUpperCase() || 'U'}</Text>
+              <Text style={{ color: colors.primary, fontWeight: 'bold', fontSize: 16 }}>{user?.name?.[0]?.toUpperCase() || 'U'}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -123,7 +134,7 @@ export default function Dashboard() {
 
       {/* Section Title */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
-        <Text style={{ color: colors.textMain, fontSize: 20, fontWeight: '800', letterSpacing: 0.5 }}>
+        <Text style={{ color: colors.textMain, fontSize: 22, fontWeight: '800', letterSpacing: 0.5 }}>
           {category === 'all' ? 'Discovery (All Public)' : category === 'hosting' ? 'Your Hosted Events' : 'Events You\'re Attending'}
         </Text>
       </View>
@@ -133,19 +144,26 @@ export default function Dashboard() {
           <TouchableOpacity
             key={cat}
             onPress={() => setCategory(cat)}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 20,
+            style={[{
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              borderRadius: 24,
               backgroundColor: category === cat ? colors.primary : colors.surfaceSecondary,
               borderWidth: 1,
               borderColor: category === cat ? colors.primary : colors.border,
-            }}
+            }, category === cat && {
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 4,
+            }]}
           >
             <Text style={{
-              color: category === cat ? 'white' : colors.textMuted,
-              fontWeight: '600',
-              textTransform: 'capitalize'
+              color: category === cat ? 'white' : colors.textMain,
+              fontWeight: '700',
+              textTransform: 'capitalize',
+              fontSize: 14
             }}>
               {cat}
             </Text>

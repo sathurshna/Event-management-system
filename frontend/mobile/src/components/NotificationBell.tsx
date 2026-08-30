@@ -4,11 +4,12 @@ import { Bell } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import api from '../utils/api';
-import { colors } from '../theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
+  const { colors } = useTheme();
   
   const prevUnreadCountRef = useRef(0);
   const isInitialLoad = useRef(true);

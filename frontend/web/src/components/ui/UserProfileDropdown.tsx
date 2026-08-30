@@ -36,7 +36,7 @@ export default function UserProfileDropdown() {
         {user.avatar ? (
           <img src={user.avatar} alt="Avatar" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
         ) : (
-          <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'white' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--text-main)' }}>
             {user.name?.charAt(0).toUpperCase()}
           </div>
         )}
@@ -61,7 +61,7 @@ export default function UserProfileDropdown() {
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '16px', borderBottom: '1px solid var(--border-color-glass)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'white' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'var(--text-main)' }}>
                 {user.name?.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -69,7 +69,7 @@ export default function UserProfileDropdown() {
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.email}</div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', color: 'var(--text-muted)' }}>
+            <button onClick={() => setIsOpen(false)} style={{ background: 'var(--overlay-medium)', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', color: 'var(--text-muted)' }}>
               <X size={16} />
             </button>
           </div>

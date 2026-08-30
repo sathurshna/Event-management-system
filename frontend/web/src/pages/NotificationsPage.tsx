@@ -84,7 +84,7 @@ const NotificationsPage: React.FC = () => {
                   borderRadius: '20px',
                   border: `1px solid ${activeFilter === filter ? 'var(--primary-color)' : 'var(--border-color)'}`,
                   backgroundColor: activeFilter === filter ? 'var(--primary-color)' : 'transparent',
-                  color: activeFilter === filter ? 'white' : 'var(--text-muted)',
+                  color: activeFilter === filter ? 'var(--text-main)' : 'var(--text-muted)',
                   cursor: 'pointer',
                   fontWeight: activeFilter === filter ? 600 : 400,
                   transition: 'all 0.2s'
@@ -159,7 +159,7 @@ const NotificationsPage: React.FC = () => {
                     <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', flexShrink: 0 }} />
                   )}
                   <div>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', color: notif.is_read ? 'var(--text-main)' : 'white' }}>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', color: notif.is_read ? 'var(--text-main)' : 'var(--text-main)' }}>
                       {notif.message}
                     </h4>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>

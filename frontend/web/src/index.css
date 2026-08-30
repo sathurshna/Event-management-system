@@ -13,6 +13,12 @@
   --border-color: #334155;
   --border-color-glass: rgba(51, 65, 85, 0.5);
 
+  --overlay-subtle: rgba(255, 255, 255, 0.02);
+  --overlay-light: rgba(255, 255, 255, 0.05);
+  --overlay-medium: rgba(255, 255, 255, 0.1);
+  --overlay-hover: rgba(255, 255, 255, 0.08);
+  --shadow-color: rgba(0, 0, 0, 0.2);
+
   /* Utilities */
   --radius-md: 8px;
   --radius-lg: 16px;
@@ -20,6 +26,23 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.light-mode {
+  --bg-color: #f8fafc;
+  --surface-color: #ffffff;
+  --surface-color-glass: rgba(255, 255, 255, 0.7);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --border-color: #e2e8f0;
+  --border-color-glass: rgba(226, 232, 240, 0.5);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+
+  --overlay-subtle: rgba(0, 0, 0, 0.02);
+  --overlay-light: rgba(0, 0, 0, 0.05);
+  --overlay-medium: rgba(0, 0, 0, 0.08);
+  --overlay-hover: rgba(0, 0, 0, 0.04);
+  --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -52,16 +75,16 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color-glass);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--overlay-medium);
+  border-left: 1px solid var(--overlay-light);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg), inset 0 0 20px rgba(255, 255, 255, 0.02);
+  box-shadow: var(--shadow-lg), inset 0 0 20px var(--overlay-subtle);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-panel:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg), 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-lg), 0 10px 30px var(--shadow-color), inset 0 0 20px var(--overlay-subtle);
 }
 
 /* Float Animation */
@@ -229,7 +252,7 @@ h4 {
   --fc-event-text-color: #000;
 
   --fc-today-bg-color: rgba(99, 102, 241, 0.1);
-  --fc-list-event-hover-bg-color: rgba(255, 255, 255, 0.05);
+  --fc-list-event-hover-bg-color: var(--overlay-light);
 }
 
 .fc-theme-standard .fc-scrollgrid {
@@ -267,7 +290,7 @@ h4 {
 }
 
 .fc-event {
-  background-color: rgba(255, 255, 255, 0.05) !important;
+  background-color: var(--overlay-light) !important;
   border: none !important;
   border-left: 4px solid var(--fc-event-border-color) !important;
   border-radius: 0 !important;
@@ -279,7 +302,7 @@ h4 {
 
 .fc-event:hover {
   transform: translateY(-1px);
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--overlay-medium) !important;
 }
 
 .fc-event-title,
@@ -297,6 +320,6 @@ h4 {
 }
 
 .selected-day-tahoe {
-  background-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: var(--overlay-medium) !important;
   transition: background-color 0.2s ease;
 }

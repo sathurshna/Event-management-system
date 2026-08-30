@@ -119,7 +119,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
               width: '32px', height: '32px', borderRadius: '50%',
               backgroundColor: step >= s ? 'var(--primary-color)' : 'var(--surface-color)',
               border: step >= s ? 'none' : '2px solid var(--border-color)',
-              color: step >= s ? 'white' : 'var(--text-muted)',
+              color: step >= s ? 'var(--text-main)' : 'var(--text-muted)',
               zIndex: 1,
               fontWeight: 'bold'
             }}
@@ -223,7 +223,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
               style={{ 
                 marginTop: '16px', height: '180px', borderRadius: 'var(--radius-md)', 
                 border: '2px dashed var(--border-color)', overflow: 'hidden',
-                backgroundColor: 'rgba(0,0,0,0.2)'
+                backgroundColor: 'var(--shadow-color)'
               }}
             >
               {formData.coverImage ? (
