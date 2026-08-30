@@ -91,7 +91,7 @@ const EventsList: React.FC = () => {
           />
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', minWidth: 0, maxWidth: '100%', WebkitOverflowScrolling: 'touch' as any }}>
         {([['all', 'Discovery (All Public)'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
             <button
               key={cat}
