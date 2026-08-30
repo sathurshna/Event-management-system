@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert, Platform, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert, Platform, Image, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -12,7 +12,7 @@ export default function CreateEventMobile() {
   const router = useRouter();
   const { date } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
-  const { colors, globalStyles } = useTheme();
+  const { colors, globalStyles, theme } = useTheme();
   
   // Parse date param if provided safely to avoid timezone offset issues
   let initialDate = new Date();
@@ -31,6 +31,23 @@ export default function CreateEventMobile() {
     isPublic: false,
     coverImage: null as string | null,
   });
+
+  useEffect(() => {
+    if (date && typeof date === 'string') {
+      const parts = date.split('-');
+      if (parts.length === 3) {
+        const newDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        setFormData(prev => {
+          const merged = new Date(prev.date);
+          merged.setFullYear(newDate.getFullYear());
+          merged.setMonth(newDate.getMonth());
+          merged.setDate(newDate.getDate());
+          return { ...prev, date: merged };
+        });
+      }
+    }
+  }, [date]);
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -220,40 +237,86 @@ export default function CreateEventMobile() {
             </View>
           </View>
 
-          {showDatePicker && (
-            <DateTimePicker
-              value={formData.date}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(false);
-                if (selectedDate) {
-                  const merged = new Date(formData.date);
-                  merged.setFullYear(selectedDate.getFullYear());
-                  merged.setMonth(selectedDate.getMonth());
-                  merged.setDate(selectedDate.getDate());
-                  handleChange('date', merged);
-                }
-              }}
-            />
-          )}
-
-          {showTimePicker && (
-            <DateTimePicker
-              value={formData.date}
-              mode="time"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowTimePicker(false);
-                if (selectedDate) {
-                  const merged = new Date(formData.date);
-                  merged.setHours(selectedDate.getHours());
-                  merged.setMinutes(selectedDate.getMinutes());
-                  merged.setSeconds(0);
-                  handleChange('date', merged);
-                }
-              }}
-            />
+          {Platform.OS === 'ios' ? (
+            <Modal visible={showDatePicker || showTimePicker} transparent animationType="slide">
+              <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <TouchableOpacity 
+                  style={{ flex: 1 }} 
+                  activeOpacity={1} 
+                  onPress={() => { setShowDatePicker(false); setShowTimePicker(false); }} 
+                />
+                <View style={{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 }}>
+                  <View style={{ width: 40, height: 4, backgroundColor: colors.border, borderRadius: 2, alignSelf: 'center', marginBottom: 20 }} />
+                  <DateTimePicker
+                    value={formData.date}
+                    mode={showDatePicker ? 'date' : 'time'}
+                    display="spinner"
+                    themeVariant={theme}
+                    textColor={colors.textMain}
+                    onChange={(event, selectedDate) => {
+                      if (selectedDate) {
+                        const merged = new Date(formData.date);
+                        if (showDatePicker) {
+                          merged.setFullYear(selectedDate.getFullYear());
+                          merged.setMonth(selectedDate.getMonth());
+                          merged.setDate(selectedDate.getDate());
+                        } else {
+                          merged.setHours(selectedDate.getHours());
+                          merged.setMinutes(selectedDate.getMinutes());
+                          merged.setSeconds(0);
+                        }
+                        handleChange('date', merged);
+                      }
+                    }}
+                  />
+                  <TouchableOpacity 
+                    onPress={() => { setShowDatePicker(false); setShowTimePicker(false); }}
+                    style={{ marginTop: 24, backgroundColor: colors.primary, padding: 16, borderRadius: 16, alignItems: 'center' }}
+                  >
+                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Confirm</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          ) : (
+            <>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={formData.date}
+                  mode="date"
+                  display="default"
+                  themeVariant={theme}
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      const merged = new Date(formData.date);
+                      merged.setFullYear(selectedDate.getFullYear());
+                      merged.setMonth(selectedDate.getMonth());
+                      merged.setDate(selectedDate.getDate());
+                      handleChange('date', merged);
+                    }
+                  }}
+                />
+              )}
+              {showTimePicker && (
+                <DateTimePicker
+                  value={formData.date}
+                  mode="time"
+                  display="default"
+                  themeVariant={theme}
+                  onChange={(event, selectedDate) => {
+                    setShowTimePicker(false);
+                    if (selectedDate) {
+                      const merged = new Date(formData.date);
+                      merged.setHours(selectedDate.getHours());
+                      merged.setMinutes(selectedDate.getMinutes());
+                      merged.setSeconds(0);
+                      handleChange('date', merged);
+                    }
+                  }}
+                />
+              )}
+            </>
           )}
 
           <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: spacing.sm }}>Location *</Text>
