@@ -123,7 +123,9 @@ export default function Dashboard() {
 
       {/* Section Title */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
-        <Text style={{ color: colors.textMain, fontSize: 20, fontWeight: '800', letterSpacing: 0.5 }}>Upcoming Events</Text>
+        <Text style={{ color: colors.textMain, fontSize: 20, fontWeight: '800', letterSpacing: 0.5 }}>
+          {category === 'all' ? 'Discovery (All Public)' : category === 'hosting' ? 'Your Hosted Events' : 'Events You\'re Attending'}
+        </Text>
       </View>
 
       <View style={{ flexDirection: 'row', gap: 8, paddingBottom: spacing.lg }}>

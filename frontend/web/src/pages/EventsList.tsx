@@ -16,10 +16,17 @@ const EventsList: React.FC = () => {
   // Filters & Pagination state
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [category, setCategory] = useState<'all' | 'hosting' | 'attending'>('all');
+  const [category, setCategory] = useState<'all' | 'hosting' | 'attending'>(
+    () => (sessionStorage.getItem('eventsListCategory') as any) || 'all'
+  );
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1); // Assuming 1 page for now as backend doesn't return total count yet
   const limit = 6;
+
+  // Persist category state across navigations
+  useEffect(() => {
+    sessionStorage.setItem('eventsListCategory', category);
+  }, [category]);
 
   // Debounce search input
   useEffect(() => {
@@ -59,8 +66,8 @@ const EventsList: React.FC = () => {
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>My Events</h1>
-          <p className="text-muted">Manage and track all your upcoming events.</p>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Events Dashboard</h1>
+          <p className="text-muted">Discover new events and manage your own.</p>
         </div>
         <Link to="/events/create" style={{ textDecoration: 'none' }}>
           <button className="btn-primary" style={{ width: 'auto' }}>
@@ -85,7 +92,7 @@ const EventsList: React.FC = () => {
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-        {([['all', 'All Events'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
+        {([['all', 'Discovery (All Public)'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
             <button
               key={cat}
               onClick={() => { setCategory(cat); setPage(1); }}
