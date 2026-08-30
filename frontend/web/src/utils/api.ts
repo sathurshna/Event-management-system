@@ -26,7 +26,7 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh the token using the HTTP-only cookie
         const res = await axios.post(
-          'http://localhost:4000/api/auth/refresh',
+          `${api.defaults.baseURL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
