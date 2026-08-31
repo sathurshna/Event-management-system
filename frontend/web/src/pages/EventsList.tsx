@@ -12,7 +12,7 @@ const EventsList: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  
+
   // Filters & Pagination state
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -46,9 +46,9 @@ const EventsList: React.FC = () => {
         category: category,
       });
       if (debouncedSearch) queryParams.append('search', debouncedSearch);
-      
+
       const response = await api.get(`/events?${queryParams.toString()}`);
-      
+
       setEvents(response.data.data);
       setTotalPages(response.data.data.length === limit ? page + 1 : page);
     } catch (error) {
@@ -81,18 +81,18 @@ const EventsList: React.FC = () => {
       <div className="glass-panel" style={{ padding: '16px', marginBottom: '32px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ position: 'relative', flex: '1 1 300px' }}>
           <Search size={18} style={{ position: 'absolute', left: '12px', top: '16px', color: 'var(--text-muted)' }} />
-          <input 
-            type="text" 
-            className="input-field" 
-            placeholder="Search events by title or description..." 
+          <input
+            type="text"
+            className="input-field"
+            placeholder="Search events by title or description..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ paddingLeft: '40px', margin: 0, backgroundColor: 'var(--shadow-color)' }}
           />
         </div>
-        
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px', minWidth: 0, maxWidth: '100%', WebkitOverflowScrolling: 'touch' as any }}>
-        {([['all', 'Discovery (All Public)'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
+          {([['all', 'Discovery (All Public)'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
             <button
               key={cat}
               onClick={() => { setCategory(cat); setPage(1); }}

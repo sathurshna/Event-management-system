@@ -1,4 +1,6 @@
 import { Expo, ExpoPushMessage } from 'expo-server-sdk';
+import pool from '../config/database';
+import { RowDataPacket } from 'mysql2';
 
 class PushService {
   private expo: Expo;
@@ -48,6 +50,26 @@ class PushService {
       console.error('Failed to send batch push notifications:', error);
     }
   }
+
+  async sendPushNotificationToUser(userId: string, title: string, body: string, data?: Record<string, any>) {
+    try {
+      const [users] = await pool.execute<RowDataPacket[]>(
+        'SELECT expo_push_token, push_enabled FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (users.length === 0) return;
+
+      const user = users[0];
+      // Only send if they have a token AND they haven't explicitly disabled push notifications
+      if (user.expo_push_token && user.push_enabled !== 0) {
+        await this.sendPushNotification(user.expo_push_token, title, body, data);
+      }
+    } catch (error) {
+      console.error(`Failed to send push notification to user ${userId}:`, error);
+    }
+  }
 }
 
 export const pushService = new PushService();
+export const sendPushNotificationToUser = pushService.sendPushNotificationToUser.bind(pushService);
