@@ -35,7 +35,7 @@ export async function registerForPushNotificationsAsync() {
     }
     try {
       token = (await Notifications.getExpoPushTokenAsync({
-        projectId: 'your-project-id' // Using standard Expo push for dev
+        projectId: 'a8707d18-05af-472c-81b0-0360190383fd'
       })).data;
     } catch (e) {
       console.log('Push Token Error', e);

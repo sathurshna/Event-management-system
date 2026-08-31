@@ -1,0 +1,15 @@
+# Ignore duplicate/extra node_modules directories
+node_modules 2/
+node_modules/
+
+# Ignore dist output
+dist/
+
+# Ignore local env files
+.env
+.env.local
+
+# Ignore test files
+__tests__/
+*.test.ts
+*.spec.ts
