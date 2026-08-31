@@ -4,6 +4,10 @@
     "slug": "eventra",
     "version": "1.0.0",
     "orientation": "portrait",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
@@ -16,15 +20,23 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sathurshnau.eventra"
     },
     "plugins": [
       "expo-router",
       "expo-status-bar",
       "expo-secure-store"
-    ]
+    ],
+    "updates": {
+      "enabled": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a8707d18-05af-472c-81b0-0360190383fd"
+      }
+    },
+    "owner": "sathurshnau"
   }
 }

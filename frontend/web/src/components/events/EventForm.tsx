@@ -43,6 +43,21 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
     setIsDirty(true);
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange('coverImage', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const nextStep = () => {
     const errors: Record<string, string> = {};
     if (step === 1) {
@@ -207,11 +222,37 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
           </div>
 
           <div>
-            <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Cover Image URL (Optional)</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Cover Image (Upload or URL)</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <label 
+                  className="btn-primary" 
+                  style={{ 
+                    cursor: 'pointer', 
+                    padding: '8px 16px', 
+                    backgroundColor: 'var(--surface-color)', 
+                    border: '1px solid var(--border-color)', 
+                    color: 'var(--text-main)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    width: 'auto'
+                  }}
+                >
+                  <ImageIcon size={18} />
+                  Upload Image
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                    style={{ display: 'none' }} 
+                  />
+                </label>
+                <span className="text-muted" style={{ fontSize: '12px' }}>OR</span>
+              </div>
               <input 
                 className="input-field" 
-                placeholder="https://images.unsplash.com/..." 
+                placeholder="Or paste an image URL (https://images.unsplash.com/...)" 
                 value={formData.coverImage} 
                 onChange={(e) => handleChange('coverImage', e.target.value)} 
               />
