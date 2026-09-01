@@ -419,3 +419,37 @@ body {
     white-space: nowrap !important;
   }
 }
+
+/* Modern Action Bar for Event Details */
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background-color: var(--overlay-medium);
+}
+
+.action-btn.danger:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .action-bar-mobile {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  .action-btn {
+    padding: 12px !important;
+    flex: 1 !important;
+  }
+}

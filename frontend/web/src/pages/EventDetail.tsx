@@ -107,21 +107,29 @@ const EventDetail: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
             <h1 style={{ margin: 0, fontSize: '2.5rem', flex: 1, minWidth: '300px' }}>{event.title}</h1>
             
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button onClick={handleCopyLink} className="btn-primary" style={{ width: 'auto', backgroundColor: 'var(--surface-color)', border: '1px solid var(--border-color)', color: 'var(--text-main)' }}>
-                <Share2 size={18} style={{ marginRight: '8px' }} /> Share
+            <div className="action-bar-mobile" style={{ 
+              display: 'flex', 
+              backgroundColor: 'var(--overlay-light)',
+              borderRadius: '24px', 
+              padding: '4px', 
+              gap: '2px',
+              border: '1px solid var(--border-color)',
+              width: 'max-content'
+            }}>
+              <button onClick={handleCopyLink} className="action-btn" title="Share">
+                <Share2 size={18} /> <span className="desktop-only" style={{ marginLeft: '6px', fontWeight: 600 }}>Share</span>
               </button>
               
               {isOwner && (
                 <>
-                  <button onClick={() => setInviteModalOpen(true)} className="btn-primary" style={{ width: 'auto', backgroundColor: 'var(--secondary-color)' }}>
-                    <Mail size={18} style={{ marginRight: '8px' }} /> Invite
+                  <button onClick={() => setInviteModalOpen(true)} className="action-btn" title="Invite">
+                    <Mail size={18} /> <span className="desktop-only" style={{ marginLeft: '6px', fontWeight: 600 }}>Invite</span>
                   </button>
-                  <button onClick={() => navigate(`/events/${id}/edit`)} className="btn-primary" style={{ width: 'auto', backgroundColor: 'var(--primary-color)' }}>
-                    <Edit size={18} style={{ marginRight: '8px' }} /> Edit
+                  <button onClick={() => navigate(`/events/${id}/edit`)} className="action-btn" title="Edit">
+                    <Edit size={18} /> <span className="desktop-only" style={{ marginLeft: '6px', fontWeight: 600 }}>Edit</span>
                   </button>
-                  <button onClick={() => setDeleteModalOpen(true)} className="btn-primary" style={{ width: 'auto', backgroundColor: '#ef4444' }}>
-                    <Trash2 size={18} />
+                  <button onClick={() => setDeleteModalOpen(true)} className="action-btn danger" title="Delete" style={{ color: '#ef4444' }}>
+                    <Trash2 size={18} /> <span className="desktop-only" style={{ marginLeft: '6px', fontWeight: 600 }}>Delete</span>
                   </button>
                 </>
               )}
