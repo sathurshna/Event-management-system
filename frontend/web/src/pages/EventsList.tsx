@@ -102,33 +102,34 @@ const EventsList: React.FC = () => {
         </div>
 
         {/* Tabs row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           
           {/* Category tabs: All · Hosting · Attending */}
-          {([['all', 'All'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
-            <button
-              key={cat}
-              onClick={() => { setCategory(cat); setPage(1); }}
-              style={{
-                padding: '8px 20px',
-                borderRadius: '20px',
-                border: 'none',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '0.875rem',
-                backgroundColor: category === cat ? 'var(--primary-color)' : 'var(--overlay-light)',
-                color: category === cat ? '#fff' : 'var(--text-muted)',
-                transition: 'all 0.2s',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {label}
-            </button>
-          ))}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {([['all', 'All'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
+              <button
+                key={cat}
+                onClick={() => { setCategory(cat); setPage(1); }}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  backgroundColor: category === cat ? 'var(--primary-color)' : 'var(--overlay-light)',
+                  color: category === cat ? '#fff' : 'var(--text-muted)',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
 
           {/* Upcoming / Past toggle — pushed to the right */}
           <div style={{
-            marginLeft: 'auto',
             display: 'flex',
             backgroundColor: 'var(--overlay-light)',
             borderRadius: '20px',

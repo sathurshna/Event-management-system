@@ -86,10 +86,10 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, curr
   // ── Timeframe filter: works across all categories ──
   const { timeframe } = queryParams;
   if (timeframe === 'past') {
-    conditions.push('e.date < NOW()');
+    conditions.push('e.date < UTC_TIMESTAMP()');
   } else {
     // Default to upcoming
-    conditions.push('e.date >= NOW()');
+    conditions.push('e.date >= UTC_TIMESTAMP()');
   }
 
   if (search) {
