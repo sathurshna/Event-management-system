@@ -12,7 +12,7 @@ export default function EditEventMobile() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { colors, globalStyles } = useTheme();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -168,6 +168,18 @@ export default function EditEventMobile() {
               </View>
             )}
           </TouchableOpacity>
+
+          <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: spacing.md, marginBottom: 4, textAlign: 'center' }}>OR</Text>
+          <Text style={{ color: colors.textMuted, fontSize: 14, marginBottom: spacing.sm }}>Image URL</Text>
+          <TextInput
+            style={[globalStyles.inputContainer, { color: colors.textMain }]}
+            placeholder="https://example.com/image.jpg"
+            placeholderTextColor={colors.textMuted}
+            value={formData.coverImage || ''}
+            onChangeText={t => handleChange('coverImage', t)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
         </View>
 
         <View style={globalStyles.glassCard}>
@@ -272,15 +284,15 @@ export default function EditEventMobile() {
             />
           </View>
 
-          <TouchableOpacity 
-            onPress={handleSave} 
+          <TouchableOpacity
+            onPress={handleSave}
             disabled={saving}
             style={[globalStyles.button, { marginTop: spacing.xl }]}
           >
             {saving ? <ActivityIndicator color="white" /> : <Text style={globalStyles.buttonText}>Save Changes</Text>}
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => router.back()}
             disabled={saving}
             style={[globalStyles.button, { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.border, marginTop: spacing.md }]}

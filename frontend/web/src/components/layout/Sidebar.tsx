@@ -30,12 +30,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, closeSidebar }) => {
         display: 'flex',
         flexDirection: 'column',
         position: 'fixed',
+        left: 0,
         top: 0,
         bottom: 0,
         height: 'calc(100vh - 48px)',
         zIndex: 50,
         transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transform: isOpen ? 'translateX(0)' : 'translateX(calc(-100% - 24px))',
         boxShadow: '10px 0 30px rgba(0,0,0,0.2)',
       }}
     >

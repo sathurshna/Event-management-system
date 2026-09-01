@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   withCredentials: true, // Important for sending/receiving HTTP-only cookies
 });
 
@@ -26,7 +26,7 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh the token using the HTTP-only cookie
         const res = await axios.post(
-          'http://localhost:4000/api/auth/refresh',
+          '/api/auth/refresh',
           {},
           { withCredentials: true }
         );

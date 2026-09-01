@@ -156,16 +156,15 @@ const NotificationsDropdown = () => {
 
       {isOpen && (
         <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '10px',
-          width: '350px',
+          position: 'fixed',
+          top: '80px',
+          right: '16px',
+          width: 'min(350px, calc(100vw - 32px))',
           backgroundColor: 'var(--surface-color)',
           border: '1px solid var(--border-color)',
           borderRadius: '12px',
           boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-          zIndex: 50,
+          zIndex: 100,
           maxHeight: '400px',
           overflowY: 'auto'
         }}>

@@ -163,7 +163,7 @@ export default function EventDetail() {
             {isOwner && (
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <TouchableOpacity 
-                  onPress={() => router.push(`/(tabs)/events/${event.id}/edit` as any)}
+                  onPress={() => router.push(`/events/${event.id}/edit` as any)}
                   style={{ backgroundColor: colors.surfaceSecondary, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
                 >
                   <Edit color="white" size={16} />

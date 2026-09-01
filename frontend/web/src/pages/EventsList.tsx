@@ -12,7 +12,7 @@ const EventsList: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  
+
   // Filters & Pagination state
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -54,9 +54,9 @@ const EventsList: React.FC = () => {
         timeframe: timeframe,
       });
       if (debouncedSearch) queryParams.append('search', debouncedSearch);
-      
+
       const response = await api.get(`/events?${queryParams.toString()}`);
-      
+
       setEvents(response.data.data);
       setTotalPages(response.data.data.length === limit ? page + 1 : page);
     } catch (error) {
@@ -74,7 +74,7 @@ const EventsList: React.FC = () => {
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>Events Dashboard</h1>
+          <h1 className="page-title">Events Dashboard</h1>
           <p className="text-muted">Discover new events and manage your own.</p>
         </div>
         <Link to="/events/create" style={{ textDecoration: 'none' }}>
@@ -163,12 +163,12 @@ const EventsList: React.FC = () => {
 
       {/* Event Grid */}
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
           {[1, 2, 3, 4, 5, 6].map((n) => <EventSkeleton key={n} />)}
         </div>
       ) : events.length > 0 ? (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '24px' }}>
             {events.map((event) => (
               <EventCard key={event.id} {...event} onClick={() => navigate(`/events/${event.id}`)} />
             ))}

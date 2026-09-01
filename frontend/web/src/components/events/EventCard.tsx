@@ -43,11 +43,11 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
   }
 
   return (
-    <div 
-      className="glass-panel event-card-wrapper" 
-      style={{ 
-        overflow: 'hidden', 
-        display: 'flex', 
+    <div
+      className="glass-panel event-card-wrapper"
+      style={{
+        overflow: 'hidden',
+        display: 'flex',
         flexDirection: 'column',
         cursor: onClick ? 'pointer' : 'default',
         position: 'relative'
@@ -70,11 +70,11 @@ const EventCard: React.FC<EventCardProps> = ({ title, description, date, locatio
           transition: 'opacity 0.3s ease',
         }} />
         {cover_image ? (
-          <img 
-            src={cover_image} 
-            alt={title} 
+          <img
+            src={cover_image}
+            alt={title}
             className="event-card-img"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
           />
         ) : (
           <div className="event-card-img" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', background: 'linear-gradient(45deg, var(--surface-color), #2a3441)', transition: 'transform 0.5s ease' }}>

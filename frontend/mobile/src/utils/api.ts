@@ -2,8 +2,8 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-// Use 10.0.2.2 for Android emulator localhost, or localhost for iOS simulator
-const baseURL = Platform.OS === 'android' ? 'http://10.0.2.2:4000/api' : 'http://localhost:4000/api';
+// Production backend URL (Render deployment)
+const baseURL = 'https://event-management-system-a0j8.onrender.com/api';
 
 const api = axios.create({
   baseURL,

@@ -10,6 +10,11 @@ export const pool = mysql.createPool({
   timezone: '+00:00', // Force UTC so stored datetimes are read back correctly
 });
 
+// Ensure every new connection sets its timezone to UTC
+pool.on('connection', function (connection) {
+  connection.query("SET time_zone='+00:00';");
+});
+
 // Function to test the connection (optional, can be called at startup)
 export const connectDB = async () => {
   try {

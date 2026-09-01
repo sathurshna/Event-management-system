@@ -43,6 +43,21 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
     setIsDirty(true);
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange('coverImage', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const nextStep = () => {
     const errors: Record<string, string> = {};
     if (step === 1) {
@@ -64,7 +79,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
 
   const handleSubmit = async () => {
     if (!formData.title || !formData.date) return toast.error('Missing required fields');
-    
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -112,8 +127,8 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px', position: 'relative' }}>
         <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '2px', backgroundColor: 'var(--border-color)', zIndex: 0 }} />
         {[1, 2, 3].map((s) => (
-          <div 
-            key={s} 
+          <div
+            key={s}
             className="flex-center"
             style={{
               width: '32px', height: '32px', borderRadius: '50%',
@@ -138,22 +153,22 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Event Title *</label>
-            <input 
+            <input
               className={`input-field ${fieldErrors.title ? 'border-red-500 focus:border-red-500' : ''}`}
-              placeholder="E.g., Tech Startup Mixer" 
-              value={formData.title} 
-              onChange={(e) => handleChange('title', e.target.value)} 
+              placeholder="E.g., Tech Startup Mixer"
+              value={formData.title}
+              onChange={(e) => handleChange('title', e.target.value)}
               required
             />
             {fieldErrors.title && <p className="text-red-500 text-sm mt-1">{fieldErrors.title}</p>}
           </div>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Description *</label>
-            <textarea 
+            <textarea
               className={`input-field ${fieldErrors.description ? 'border-red-500 focus:border-red-500' : ''}`}
-              placeholder="What is this event about?" 
-              value={formData.description} 
-              onChange={(e) => handleChange('description', e.target.value)} 
+              placeholder="What is this event about?"
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
               rows={5}
               required
             />
@@ -168,22 +183,22 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Date & Time *</label>
             {/* Custom styled datetime-local picker */}
-            <input 
-              type="datetime-local" 
+            <input
+              type="datetime-local"
               className={`input-field ${fieldErrors.date ? 'border-red-500 focus:border-red-500' : ''}`}
-              value={formData.date} 
-              onChange={(e) => handleChange('date', e.target.value)} 
+              value={formData.date}
+              onChange={(e) => handleChange('date', e.target.value)}
               required
             />
             {fieldErrors.date && <p className="text-red-500 text-sm mt-1">{fieldErrors.date}</p>}
           </div>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Location / Venue *</label>
-            <input 
+            <input
               className={`input-field ${fieldErrors.location ? 'border-red-500 focus:border-red-500' : ''}`}
-              placeholder="Full address or meeting link" 
-              value={formData.location} 
-              onChange={(e) => handleChange('location', e.target.value)} 
+              placeholder="Full address or meeting link"
+              value={formData.location}
+              onChange={(e) => handleChange('location', e.target.value)}
               required
             />
             {fieldErrors.location && <p className="text-red-500 text-sm mt-1">{fieldErrors.location}</p>}
@@ -196,9 +211,9 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div>
             <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Visibility</label>
-            <select 
-              className="input-field" 
-              value={formData.isPublic ? 'true' : 'false'} 
+            <select
+              className="input-field"
+              value={formData.isPublic ? 'true' : 'false'}
               onChange={(e) => handleChange('isPublic', e.target.value === 'true')}
             >
               <option value="true">Public (Anyone can see and RSVP)</option>
@@ -207,21 +222,47 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
           </div>
 
           <div>
-            <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Cover Image URL (Optional)</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input 
-                className="input-field" 
-                placeholder="https://images.unsplash.com/..." 
-                value={formData.coverImage} 
-                onChange={(e) => handleChange('coverImage', e.target.value)} 
+            <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Cover Image (Upload or URL)</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <label
+                  className="btn-primary"
+                  style={{
+                    cursor: 'pointer',
+                    padding: '8px 16px',
+                    backgroundColor: 'var(--surface-color)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-main)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    width: 'auto'
+                  }}
+                >
+                  <ImageIcon size={18} />
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                <span className="text-muted" style={{ fontSize: '12px' }}>OR</span>
+              </div>
+              <input
+                className="input-field"
+                placeholder="Or paste an image URL (https://images.unsplash.com/...)"
+                value={formData.coverImage}
+                onChange={(e) => handleChange('coverImage', e.target.value)}
               />
             </div>
-            
+
             {/* Cover Image Preview */}
-            <div 
+            <div
               className="flex-center"
-              style={{ 
-                marginTop: '16px', height: '180px', borderRadius: 'var(--radius-md)', 
+              style={{
+                marginTop: '16px', height: '180px', borderRadius: 'var(--radius-md)',
                 border: '2px dashed var(--border-color)', overflow: 'hidden',
                 backgroundColor: 'var(--shadow-color)'
               }}
@@ -241,15 +282,15 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, isEdit = false }) =>
 
       {/* Navigation Buttons */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '32px' }}>
-        <button 
-          className="btn-primary" 
-          onClick={prevStep} 
+        <button
+          className="btn-primary"
+          onClick={prevStep}
           disabled={step === 1 || isSubmitting}
           style={{ width: 'auto', backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-main)', opacity: step === 1 ? 0 : 1 }}
         >
           <ChevronLeft size={18} style={{ marginRight: '8px' }} /> Back
         </button>
-        
+
         {step < 3 ? (
           <button className="btn-primary" onClick={nextStep} style={{ width: 'auto' }}>
             Next <ChevronRight size={18} style={{ marginLeft: '8px' }} />

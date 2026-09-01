@@ -24,6 +24,16 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.json({
+    status: 'ok',
+    message: '🎉 Eventra API is running',
+    version: '1.0.0',
+    docs: '/api/health',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

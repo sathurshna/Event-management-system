@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,8 +26,10 @@ import ServerError from './pages/ServerError';
 
 const PublicOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
   if (loading) return null;
-  return user ? <Navigate to="/" replace /> : <>{children}</>;
+  const from = location.state?.from || "/";
+  return user ? <Navigate to={from} replace /> : <>{children}</>;
 };
 
 const AppRoutes = () => {
