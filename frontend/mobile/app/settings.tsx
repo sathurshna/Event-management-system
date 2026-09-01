@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Switch, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Bell, MapPin, Moon, Shield, CircleHelp, Info } from 'lucide-react-native';
+import { ChevronLeft, Bell, Moon, Shield, CircleHelp, Info } from 'lucide-react-native';
 import { spacing } from '../src/theme';
 import { useTheme } from '../src/context/ThemeContext';
 
@@ -14,8 +14,6 @@ export default function SettingsScreen() {
   
   // Local state for toggles (syncs with user context on mount)
   const [pushEnabled, setPushEnabled] = useState(user?.push_enabled !== false);
-  const [emailEnabled, setEmailEnabled] = useState(user?.email_enabled !== false);
-  const [locationEnabled, setLocationEnabled] = useState(true);
 
   const handleTogglePush = async (val: boolean) => {
     setPushEnabled(val);
@@ -23,15 +21,6 @@ export default function SettingsScreen() {
       await updateUser({ push_enabled: val });
     } catch (e) {
       setPushEnabled(!val); // revert on error
-    }
-  };
-
-  const handleToggleEmail = async (val: boolean) => {
-    setEmailEnabled(val);
-    try {
-      await updateUser({ email_enabled: val });
-    } catch (e) {
-      setEmailEnabled(!val); // revert on error
     }
   };
 
@@ -73,12 +62,10 @@ export default function SettingsScreen() {
           NOTIFICATIONS
         </Text>
         {renderSettingRow(<Bell color={colors.textMain} size={22} />, 'Push Notifications', pushEnabled, handleTogglePush)}
-        {renderSettingRow(<Bell color={colors.textMain} size={22} opacity={0.6} />, 'Email Alerts', emailEnabled, handleToggleEmail)}
 
         <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: '700', letterSpacing: 1, marginBottom: 12, marginLeft: 4, marginTop: 24 }}>
           PREFERENCES
         </Text>
-        {renderSettingRow(<MapPin color={colors.textMain} size={22} />, 'Location Services', locationEnabled, setLocationEnabled)}
         {renderSettingRow(<Moon color={colors.textMain} size={22} />, 'Dark Mode', theme === 'dark', toggleTheme)}
 
         <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: '700', letterSpacing: 1, marginBottom: 12, marginLeft: 4, marginTop: 24 }}>
