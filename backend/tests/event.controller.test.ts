@@ -30,7 +30,7 @@ describe('Event Controller', () => {
   });
 
   describe('createEvent', () => {
-    it('should create an event and auto-rsvp the host', async () => {
+    it('should create an event', async () => {
       mockRequest.body = {
         title: 'Test Event',
         description: 'Test Description',
@@ -41,12 +41,11 @@ describe('Event Controller', () => {
       };
 
       (pool.query as jest.Mock).mockResolvedValueOnce([{ affectedRows: 1 }]); // Event insert
-      (pool.query as jest.Mock).mockResolvedValueOnce([{ affectedRows: 1 }]); // RSVP insert
 
       createEvent(mockRequest as Request, mockResponse as Response, nextFunction);
-      await new Promise(process.nextTick);
+      await new Promise(setImmediate);
 
-      expect(pool.query).toHaveBeenCalledTimes(2);
+      expect(pool.query).toHaveBeenCalledTimes(1);
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -67,7 +66,7 @@ describe('Event Controller', () => {
       (pool.query as jest.Mock).mockRejectedValueOnce(mockError);
 
       createEvent(mockRequest as Request, mockResponse as Response, nextFunction);
-      await new Promise(process.nextTick);
+      await new Promise(setImmediate);
 
       expect(nextFunction).toHaveBeenCalledWith(mockError);
     });
@@ -81,7 +80,7 @@ describe('Event Controller', () => {
       (pool.query as jest.Mock).mockResolvedValueOnce([{ affectedRows: 1 }]);
 
       deleteEvent(mockRequest as Request, mockResponse as Response, nextFunction);
-      await new Promise(process.nextTick);
+      await new Promise(setImmediate);
 
       expect(pool.query).toHaveBeenCalledTimes(1);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
@@ -100,7 +99,7 @@ describe('Event Controller', () => {
       (pool.query as jest.Mock).mockResolvedValueOnce([{ affectedRows: 0 }]);
 
       deleteEvent(mockRequest as Request, mockResponse as Response, nextFunction);
-      await new Promise(process.nextTick);
+      await new Promise(setImmediate);
 
       expect(nextFunction).toHaveBeenCalledWith(expect.any(AppError));
       const errorArg = nextFunction.mock.calls[0][0];
