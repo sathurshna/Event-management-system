@@ -1,5 +1,5 @@
 import { Expo, ExpoPushMessage } from 'expo-server-sdk';
-import pool from '../config/database';
+import { pool } from '../config/db';
 import { RowDataPacket } from 'mysql2';
 
 class PushService {
