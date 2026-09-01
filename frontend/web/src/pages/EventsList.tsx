@@ -77,7 +77,7 @@ const EventsList: React.FC = () => {
           <h1 className="page-title mt-mobile">My Events</h1>
           <p className="text-muted">Discover new events and manage your own.</p>
         </div>
-        <Link to="/events/create" style={{ textDecoration: 'none' }}>
+        <Link to="/events/create" className="desktop-only" style={{ textDecoration: 'none' }}>
           <button className="btn-primary" style={{ width: 'auto' }}>
             <CalendarPlus size={20} style={{ marginRight: '8px' }} />
             Create Event
