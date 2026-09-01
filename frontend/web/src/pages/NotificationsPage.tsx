@@ -71,9 +71,9 @@ const NotificationsPage: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+      <div className="header-actions-mobile" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', margin: '0 0 16px 0', lineHeight: 1 }}>Notifications</h1>
+          <h1 className="mt-mobile" style={{ fontSize: '2rem', margin: '0 0 16px 0', lineHeight: 1 }}>Notifications</h1>
           <div style={{ display: 'flex', gap: '8px' }}>
             {['All', 'Unread'].map(filter => (
               <button
