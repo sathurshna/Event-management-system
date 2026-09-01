@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
@@ -11,6 +11,7 @@ const Login: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +22,8 @@ const Login: React.FC = () => {
       const response = await api.post('/auth/login', { email, password });
       await login(response.data.accessToken);
       toast.success('Welcome back!');
-      navigate('/');
+      const from = location.state?.from || '/';
+      navigate(from);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to login');
     } finally {
@@ -82,7 +84,7 @@ const Login: React.FC = () => {
         </form>
 
         <p className="text-muted" style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem' }}>
-          Don't have an account? <Link to="/register" style={{ color: 'var(--primary-color)', fontWeight: 600, textDecoration: 'none', marginLeft: '4px' }}>Create one here</Link>
+          Don't have an account? <Link to="/register" state={{ from: location.state?.from }} style={{ color: 'var(--primary-color)', fontWeight: 600, textDecoration: 'none', marginLeft: '4px' }}>Create one here</Link>
         </p>
       </div>
     </div>

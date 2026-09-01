@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, User, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
@@ -11,6 +11,7 @@ const Register: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ const Register: React.FC = () => {
     try {
       await api.post('/auth/register', { name, email, password });
       toast.success('Account created! Please log in.');
-      navigate('/login');
+      navigate('/login', { state: { from: location.state?.from } });
     } catch (error: any) {
       if (error.response?.data?.errors) {
         // Handle Zod validation array by mapping them to field paths
@@ -106,7 +107,7 @@ const Register: React.FC = () => {
         </form>
 
         <p className="text-muted" style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>Log in here</Link>
+          Already have an account? <Link to="/login" state={{ from: location.state?.from }} style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>Log in here</Link>
         </p>
       </div>
     </div>
