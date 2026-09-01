@@ -4,6 +4,9 @@
 
 Eventra is a premium, full-stack event management application that empowers users to seamlessly discover, create, and manage events. Designed with a sleek "glassmorphism" aesthetic and highly dynamic interfaces, Eventra delivers a world-class user experience across both Web and Mobile platforms.
 
+<br>
+<br>
+
 ---
 
 ## 🌐 Live Deployments
@@ -12,9 +15,12 @@ Eventra is a premium, full-stack event management application that empowers user
 |---|---|
 | 🌍 **Web App** | [event-management-system-chi-bice.vercel.app](https://event-management-system-chi-bice.vercel.app) |
 | ⚙️ **Backend API** | [event-management-system-a0j8.onrender.com](https://event-management-system-a0j8.onrender.com) |
-| 🗄️ **Database** | [Railway MySQL](https://railway.app) — hosted on Railway |
+| 🗄️ **Database** | [Railway MySQL](https://railway.app) 
 | 📱 **Android APK** | [Download from EAS](https://expo.dev/accounts/sathurshnau/projects/eventra/builds/71fbbec7-76d8-450f-b274-e9646b7eaa5f) |
 | 📲 **Expo Go (Mobile)** | `@sathurshnau/eventra` on Expo Go |
+
+<br>
+<br>
 
 ---
 
@@ -27,6 +33,9 @@ Eventra is a premium, full-stack event management application that empowers user
 - 📆 **Interactive Calendar**: Comprehensive monthly, weekly, and daily views of your personal schedule.
 - 🔔 **Real-Time Notifications**: Instantly receive updates when someone RSVPs to your event or invites you to one.
 - 📱 **Cross-Platform**: Fully responsive web design and a natively compiled React Native mobile application.
+
+<br>
+<br>
 
 ---
 
@@ -51,6 +60,9 @@ Eventra is a premium, full-stack event management application that empowers user
 ### Frontend (Mobile)
 - **Framework**: React Native (Expo SDK 57)
 - **Navigation**: Expo Router
+
+<br>
+<br>
 
 ---
 
@@ -118,6 +130,9 @@ npm run dev
 ```
 The web app will automatically launch at `http://localhost:5173`.
 
+<br>
+<br>
+
 ---
 
 ## 📱 Mobile App Setup
@@ -139,6 +154,9 @@ If you just want to test the finished, published application on a physical phone
 - **Android (Direct APK Install):** Download our pre-built [SDK 57 EAS APK](https://expo.dev/accounts/sathurshnau/projects/eventra/builds/71fbbec7-76d8-450f-b274-e9646b7eaa5f) and install it directly onto your Android device.
 - **Expo Go App:** Install the **Expo Go** app from your App Store/Play Store, sign in, and search for the published project: `@sathurshnau/eventra`.
 
+<br>
+<br>
+
 ---
 
 ## 🧪 Testing
@@ -159,6 +177,9 @@ cd frontend/web
 npx playwright test
 ```
 
+<br>
+<br>
+
 ---
 
 ## 🔐 Environment Variables Reference
@@ -175,10 +196,18 @@ Your `backend/.env` file should look like this:
 | `JWT_SECRET` | Secret key for JWT signing | `your_super_secret_key` |
 | `CLIENT_URL` | Your frontend's URL for CORS | `http://localhost:5173` |
 
+<br>
+<br>
+
 ---
 
 ## 🤝 Contributing
 Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+<br>
+<br>
+
+---
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
