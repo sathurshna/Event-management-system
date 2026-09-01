@@ -72,13 +72,13 @@ const EventsList: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
+      <div className="header-actions-mobile" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
         <div>
           <h1 className="page-title">Events Dashboard</h1>
           <p className="text-muted">Discover new events and manage your own.</p>
         </div>
-        <Link to="/events/create" style={{ textDecoration: 'none' }}>
-          <button className="btn-primary" style={{ width: 'auto' }}>
+        <Link to="/events/create" style={{ textDecoration: 'none' }} className="w-full-mobile">
+          <button className="btn-primary w-full-mobile" style={{ width: 'auto' }}>
             <CalendarPlus size={20} style={{ marginRight: '8px' }} />
             Create Event
           </button>
@@ -102,10 +102,10 @@ const EventsList: React.FC = () => {
         </div>
 
         {/* Tabs row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div className="tabs-row-mobile" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           
           {/* Category tabs: All · Hosting · Attending */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="tabs-group-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             {([['all', 'All'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
               <button
                 key={cat}
@@ -129,7 +129,7 @@ const EventsList: React.FC = () => {
           </div>
 
           {/* Upcoming / Past toggle — pushed to the right */}
-          <div style={{
+          <div className="w-full-mobile" style={{
             display: 'flex',
             backgroundColor: 'var(--overlay-light)',
             borderRadius: '20px',
@@ -142,6 +142,7 @@ const EventsList: React.FC = () => {
                 key={tf}
                 onClick={() => { setTimeframe(tf); setPage(1); }}
                 style={{
+                  flex: 1,
                   padding: '6px 18px',
                   borderRadius: '18px',
                   border: 'none',

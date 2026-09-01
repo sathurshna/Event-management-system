@@ -369,3 +369,37 @@ body {
     font-size: 1.75rem !important;
   }
 }
+/* Custom responsive layout utilities for EventsList and other pages */
+@media (max-width: 768px) {
+  .flex-col-mobile {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .flex-col-mobile > * {
+    width: 100% !important;
+  }
+  .tabs-row-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .tabs-group-mobile {
+    width: 100% !important;
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .w-full-mobile {
+    width: 100% !important;
+    margin-left: 0 !important;
+    justify-content: center;
+  }
+  .header-actions-mobile {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .header-actions-mobile button {
+    width: 100% !important;
+  }
+}
