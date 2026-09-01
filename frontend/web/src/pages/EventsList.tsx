@@ -102,23 +102,31 @@ const EventsList: React.FC = () => {
         </div>
 
         {/* Tabs row */}
-        <div className="tabs-row-mobile" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div className="tabs-row-mobile" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' }}>
           
           {/* Category tabs: All · Hosting · Attending */}
-          <div className="tabs-group-mobile" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="w-full-mobile" style={{
+            display: 'flex',
+            backgroundColor: 'var(--overlay-light)',
+            borderRadius: '20px',
+            padding: '3px',
+            gap: '2px',
+            border: '1px solid var(--border-color)',
+            flex: '1 1 auto',
+          }}>
             {([['all', 'All'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
               <button
                 key={cat}
-                className="tab-btn-mobile"
                 onClick={() => { setCategory(cat); setPage(1); }}
                 style={{
-                  padding: '8px 20px',
-                  borderRadius: '20px',
+                  flex: 1,
+                  padding: '6px 12px',
+                  borderRadius: '18px',
                   border: 'none',
                   cursor: 'pointer',
                   fontWeight: 600,
-                  fontSize: '0.875rem',
-                  backgroundColor: category === cat ? 'var(--primary-color)' : 'var(--overlay-light)',
+                  fontSize: '0.85rem',
+                  backgroundColor: category === cat ? 'var(--primary-color)' : 'transparent',
                   color: category === cat ? '#fff' : 'var(--text-muted)',
                   transition: 'all 0.2s',
                   whiteSpace: 'nowrap',
@@ -137,6 +145,7 @@ const EventsList: React.FC = () => {
             padding: '3px',
             gap: '2px',
             border: '1px solid var(--border-color)',
+            flex: '0 1 auto',
           }}>
             {(['upcoming', 'past'] as const).map((tf) => (
               <button
