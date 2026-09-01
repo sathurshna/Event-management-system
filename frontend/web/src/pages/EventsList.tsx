@@ -140,7 +140,7 @@ const EventsList: React.FC = () => {
             {search ? `We couldn't find any events matching "${search}".` : "You haven't created any events yet. Get started by creating your first event!"}
           </p>
           {!search && (
-            <button className="btn-primary" style={{ width: 'auto' }}>
+            <button className="btn-primary" style={{ width: 'auto' }} onClick={() => navigate('/events/create')}>
               Create Your First Event
             </button>
           )}
