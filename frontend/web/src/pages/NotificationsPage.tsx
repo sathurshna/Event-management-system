@@ -98,6 +98,7 @@ const NotificationsPage: React.FC = () => {
         
         {unreadCount > 0 && (
           <button 
+            className="w-full-mobile"
             onClick={markAllAsRead}
             style={{ 
               backgroundColor: 'transparent', 
@@ -109,6 +110,7 @@ const NotificationsPage: React.FC = () => {
               fontWeight: 500,
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               cursor: 'pointer',
               transition: 'background-color 0.2s',
               gap: '6px'

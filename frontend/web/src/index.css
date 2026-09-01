@@ -398,9 +398,7 @@ body {
   .header-actions-mobile {
     flex-direction: column !important;
     align-items: flex-start !important;
-  }
-  .header-actions-mobile button {
-    width: 100% !important;
+    gap: 16px !important;
   }
 }
 
