@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, MapPin, Moon } from 'lucide-react';
+import { Bell, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -7,8 +7,6 @@ export default function SettingsPage() {
   const { user, updateUser } = useAuth();
 
   const [pushEnabled, setPushEnabled] = useState(user?.push_enabled !== false);
-  const [emailEnabled, setEmailEnabled] = useState(user?.email_enabled !== false);
-  const [locationEnabled, setLocationEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
@@ -27,16 +25,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleToggleEmail = async () => {
-    const newVal = !emailEnabled;
-    setEmailEnabled(newVal);
-    try {
-      await updateUser({ email_enabled: newVal });
-    } catch (e) {
-      setEmailEnabled(!newVal);
-      toast.error('Failed to update email settings');
-    }
-  };
 
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -96,14 +84,12 @@ export default function SettingsPage() {
           Notifications
         </h3>
         {renderSettingRow(<Bell size={24} />, 'Push Notifications', pushEnabled, handleTogglePush)}
-        {renderSettingRow(<Bell size={24} opacity={0.6} />, 'Email Alerts', emailEnabled, handleToggleEmail)}
       </div>
 
       <div style={{ marginBottom: '40px' }}>
         <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: '16px', fontWeight: 700 }}>
           Preferences
         </h3>
-        {renderSettingRow(<MapPin size={24} />, 'Location Services', locationEnabled, () => setLocationEnabled(!locationEnabled))}
         {renderSettingRow(<Moon size={24} />, 'Dark Mode', darkMode, toggleDarkMode)}
       </div>
     </div>

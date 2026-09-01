@@ -13,11 +13,19 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ title, description, date, location, cover_image, is_public, onClick }) => {
-  const formattedDate = new Date(date).toLocaleDateString('en-US', {
+  const formattedDate = new Date(date.replace(' ', 'T').replace(/(?<!Z|[+-]\d{2}:\d{2})$/, 'Z')).toLocaleDateString('en-US', {
     weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
-  const isPast = new Date(date) < new Date();
+  // MySQL returns dates without timezone suffix (e.g. "2026-09-01 16:05:00").
+  // Browsers treat such strings as local time, causing wrong past/future comparisons.
+  // Normalise to UTC ISO format so parsing is consistent with the backend.
+  const normaliseDate = (d: string) => {
+    const iso = d.replace(' ', 'T');
+    return iso.endsWith('Z') || iso.includes('+') ? iso : iso + 'Z';
+  };
+  const eventDate = new Date(normaliseDate(date));
+  const isPast = eventDate < new Date();
   let badgeColor = 'var(--primary-color)';
   let badgeText = '';
   let badgeTextColor = 'var(--text-main)';

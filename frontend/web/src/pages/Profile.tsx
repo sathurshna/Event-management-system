@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, User, Mail, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
 import toast from 'react-hot-toast';
 
 export default function Profile() {
@@ -30,16 +29,9 @@ export default function Profile() {
     setSaving(true);
     try {
       const payload: any = { name };
-      if (avatar !== user?.avatar) {
-        payload.avatar = avatar;
-      }
-      
-      const response = await api.put('/auth/me', payload);
-      
-      if (response.data.status === 'success') {
-        updateUser({ name, avatar: avatar || user?.avatar });
-        toast.success('Profile updated successfully!');
-      }
+      if (avatar !== user?.avatar) payload.avatar = avatar;
+      await updateUser(payload);
+      toast.success('Profile updated successfully!');
     } catch (error) {
       console.error('Failed to update profile', error);
       toast.error('Failed to update profile');

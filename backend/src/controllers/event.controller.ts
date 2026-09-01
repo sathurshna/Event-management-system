@@ -60,8 +60,18 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, curr
       }
       calCond += `)`;
       conditions.push(calCond);
+    } else if (category === 'past') {
+      // kept for backward compat — treated same as 'all' + timeframe=past
+      let pastCond = `(e.is_public = 1 OR e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
+      values.push(currentUserId, currentUserId);
+      if (currentUserEmail) {
+        pastCond += ` OR EXISTS (SELECT 1 FROM invitations i WHERE i.event_id = e.id AND i.email = ? AND i.declined = FALSE)`;
+        values.push(currentUserEmail);
+      }
+      pastCond += `)`;
+      conditions.push(pastCond);
     } else {
-      // Default to 'all' (Discovery view - includes all public events, and private events user is attending/hosting/invited to)
+      // Default to 'all' (Discovery view - all public/relevant events)
       let allCond = `(e.is_public = 1 OR e.host_id = ? OR EXISTS (SELECT 1 FROM rsvps r WHERE r.event_id = e.id AND r.user_id = ? AND r.status = 'ATTENDING')`;
       values.push(currentUserId, currentUserId);
       if (currentUserEmail) {
@@ -71,6 +81,15 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, curr
       allCond += `)`;
       conditions.push(allCond);
     }
+  }
+
+  // ── Timeframe filter: works across all categories ──
+  const { timeframe } = queryParams;
+  if (timeframe === 'past') {
+    conditions.push('e.date < NOW()');
+  } else {
+    // Default to upcoming
+    conditions.push('e.date >= NOW()');
   }
 
   if (search) {
@@ -91,7 +110,8 @@ const buildQuery = (baseQuery: string, queryParams: any, isPublic: boolean, curr
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
   
-  const finalQuery = `${baseQuery} ${whereClause} ORDER BY e.date ASC LIMIT ? OFFSET ?`;
+  const orderDir = (queryParams.timeframe === 'past') ? 'DESC' : 'ASC';
+  const finalQuery = `${baseQuery} ${whereClause} ORDER BY e.date ${orderDir} LIMIT ? OFFSET ?`;
   values.push(parseInt(limit as string), offset);
 
   return { finalQuery, values };

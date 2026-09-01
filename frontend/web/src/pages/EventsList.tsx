@@ -19,14 +19,21 @@ const EventsList: React.FC = () => {
   const [category, setCategory] = useState<'all' | 'hosting' | 'attending'>(
     () => (sessionStorage.getItem('eventsListCategory') as any) || 'all'
   );
+  const [timeframe, setTimeframe] = useState<'upcoming' | 'past'>(
+    () => (sessionStorage.getItem('eventsListTimeframe') as any) || 'upcoming'
+  );
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); // Assuming 1 page for now as backend doesn't return total count yet
+  const [totalPages, setTotalPages] = useState(1);
   const limit = 6;
 
-  // Persist category state across navigations
+  // Persist filters across navigations
   useEffect(() => {
     sessionStorage.setItem('eventsListCategory', category);
   }, [category]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eventsListTimeframe', timeframe);
+  }, [timeframe]);
 
   // Debounce search input
   useEffect(() => {
@@ -44,6 +51,7 @@ const EventsList: React.FC = () => {
         page: page.toString(),
         limit: limit.toString(),
         category: category,
+        timeframe: timeframe,
       });
       if (debouncedSearch) queryParams.append('search', debouncedSearch);
       
@@ -56,7 +64,7 @@ const EventsList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch, category, user?.id]);
+  }, [page, debouncedSearch, category, timeframe, user?.id]);
 
   useEffect(() => {
     fetchEvents();
@@ -78,9 +86,11 @@ const EventsList: React.FC = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="glass-panel" style={{ padding: '16px', marginBottom: '32px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ position: 'relative', flex: '1 1 300px' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '16px', color: 'var(--text-muted)' }} />
+      <div className="glass-panel" style={{ padding: '16px', marginBottom: '32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        
+        {/* Search */}
+        <div style={{ position: 'relative' }}>
+          <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input 
             type="text" 
             className="input-field" 
@@ -90,9 +100,12 @@ const EventsList: React.FC = () => {
             style={{ paddingLeft: '40px', margin: 0, backgroundColor: 'var(--shadow-color)' }}
           />
         </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-        {([['all', 'Discovery (All Public)'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
+
+        {/* Tabs row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          
+          {/* Category tabs: All · Hosting · Attending */}
+          {([['all', 'All'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
             <button
               key={cat}
               onClick={() => { setCategory(cat); setPage(1); }}
@@ -104,7 +117,7 @@ const EventsList: React.FC = () => {
                 fontWeight: 600,
                 fontSize: '0.875rem',
                 backgroundColor: category === cat ? 'var(--primary-color)' : 'var(--overlay-light)',
-                color: category === cat ? 'var(--text-main)' : 'var(--text-muted)',
+                color: category === cat ? '#fff' : 'var(--text-muted)',
                 transition: 'all 0.2s',
                 whiteSpace: 'nowrap',
               }}
@@ -112,8 +125,41 @@ const EventsList: React.FC = () => {
               {label}
             </button>
           ))}
+
+          {/* Upcoming / Past toggle — pushed to the right */}
+          <div style={{
+            marginLeft: 'auto',
+            display: 'flex',
+            backgroundColor: 'var(--overlay-light)',
+            borderRadius: '20px',
+            padding: '3px',
+            gap: '2px',
+            border: '1px solid var(--border-color)',
+          }}>
+            {(['upcoming', 'past'] as const).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => { setTimeframe(tf); setPage(1); }}
+                style={{
+                  padding: '6px 18px',
+                  borderRadius: '18px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  backgroundColor: timeframe === tf ? 'var(--primary-color)' : 'transparent',
+                  color: timeframe === tf ? '#fff' : 'var(--text-muted)',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {tf.charAt(0).toUpperCase() + tf.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+
 
       {/* Event Grid */}
       {loading ? (
@@ -137,9 +183,13 @@ const EventsList: React.FC = () => {
           </div>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>No events found</h3>
           <p className="text-muted" style={{ maxWidth: '400px', marginBottom: '24px' }}>
-            {search ? `We couldn't find any events matching "${search}".` : "You haven't created any events yet. Get started by creating your first event!"}
+            {search
+              ? `We couldn't find any events matching "${search}".`
+              : timeframe === 'past'
+              ? 'No past events found.'
+              : "You haven't created any events yet. Get started by creating your first event!"}
           </p>
-          {!search && (
+          {!search && timeframe !== 'past' && (
             <button className="btn-primary" style={{ width: 'auto' }} onClick={() => navigate('/events/create')}>
               Create Your First Event
             </button>

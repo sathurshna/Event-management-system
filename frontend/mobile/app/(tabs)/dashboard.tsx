@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [events, setEvents] = useState<any[]>([]);
   const [stats, setStats] = useState<DashboardStats>({ activeEvents: 0, totalAttendees: 0, pendingInvites: 0, avgRating: 0 });
   const [category, setCategory] = useState<'all' | 'hosting' | 'attending'>('all');
+  const [timeframe, setTimeframe] = useState<'upcoming' | 'past'>('upcoming');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -72,7 +73,7 @@ export default function Dashboard() {
       setErrorMsg(null);
       // Fetch user's events and stats concurrently
       const [eventsRes, statsRes] = await Promise.all([
-        api.get(`/events?limit=20&category=${category}`),
+        api.get(`/events?limit=20&category=${category}&timeframe=${timeframe}`),
         api.get('/events/stats')
       ]);
       setEvents(eventsRes.data.data);
@@ -89,7 +90,7 @@ export default function Dashboard() {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [category])
+    }, [category, timeframe])
   );
 
   const onRefresh = useCallback(() => {
@@ -135,43 +136,87 @@ export default function Dashboard() {
       {/* Section Title */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 }}>
         <Text style={{ color: colors.textMain, fontSize: 22, fontWeight: '800', letterSpacing: 0.5 }}>
-          {category === 'all' ? 'Discovery (All Public)' : category === 'hosting' ? 'Your Hosted Events' : 'Events You\'re Attending'}
+          {category === 'all' ? 'All Events' : category === 'hosting' ? 'Your Hosted Events' : 'Events You\'re Attending'}
         </Text>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: 8, paddingBottom: spacing.lg }}>
-        {(['all', 'hosting', 'attending'] as const).map(cat => (
-          <TouchableOpacity
-            key={cat}
-            onPress={() => setCategory(cat)}
-            style={[{
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-              borderRadius: 24,
-              backgroundColor: category === cat ? colors.primary : colors.surfaceSecondary,
-              borderWidth: 1,
-              borderColor: category === cat ? colors.primary : colors.border,
-            }, category === cat && {
-              shadowColor: colors.primary,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.2,
-              shadowRadius: 8,
-              elevation: 4,
-            }]}
-          >
-            <Text style={{
-              color: category === cat ? 'white' : colors.textMain,
-              fontWeight: '700',
-              textTransform: 'capitalize',
-              fontSize: 14
-            }}>
-              {cat}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      {/* Filter row: category tabs left, Upcoming/Past toggle right */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: spacing.lg, flexWrap: 'wrap', gap: 8 }}>
+        
+        {/* Category tabs */}
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {(['all', 'hosting', 'attending'] as const).map(cat => (
+            <TouchableOpacity
+              key={cat}
+              onPress={() => setCategory(cat)}
+              style={[{
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 24,
+                backgroundColor: category === cat ? colors.primary : colors.surfaceSecondary,
+                borderWidth: 1,
+                borderColor: category === cat ? colors.primary : colors.border,
+              }, category === cat && {
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.2,
+                shadowRadius: 8,
+                elevation: 4,
+              }]}
+            >
+              <Text style={{
+                color: category === cat ? 'white' : colors.textMain,
+                fontWeight: '700',
+                textTransform: 'capitalize',
+                fontSize: 13
+              }}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Upcoming / Past segmented toggle */}
+        <View style={{
+          flexDirection: 'row',
+          backgroundColor: colors.surfaceSecondary,
+          borderRadius: 24,
+          padding: 3,
+          borderWidth: 1,
+          borderColor: colors.border,
+        }}>
+          {(['upcoming', 'past'] as const).map(tf => (
+            <TouchableOpacity
+              key={tf}
+              onPress={() => setTimeframe(tf)}
+              style={[{
+                paddingHorizontal: 16,
+                paddingVertical: 7,
+                borderRadius: 22,
+              }, timeframe === tf && {
+                backgroundColor: colors.primary,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 6,
+                elevation: 3,
+              }]}
+            >
+              <Text style={{
+                color: timeframe === tf ? 'white' : colors.textMuted,
+                fontWeight: '700',
+                fontSize: 13,
+                textTransform: 'capitalize',
+              }}>
+                {tf.charAt(0).toUpperCase() + tf.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </View>
   );
+
 
   const renderSideMenu = () => (
     <Modal visible={showMenu} transparent animationType="none">
