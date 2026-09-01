@@ -403,3 +403,21 @@ body {
     width: 100% !important;
   }
 }
+
+@media (max-width: 768px) {
+  .mt-mobile {
+    margin-top: 16px !important;
+  }
+  .tabs-group-mobile {
+    display: flex !important;
+    width: 100% !important;
+    gap: 4px !important;
+  }
+  .tab-btn-mobile {
+    flex: 1 !important;
+    padding: 8px 4px !important;
+    font-size: 0.75rem !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+}

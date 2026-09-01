@@ -72,13 +72,13 @@ const EventsList: React.FC = () => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <div className="header-actions-mobile" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', gap: '16px' }}>
         <div>
-          <h1 className="page-title">Events Dashboard</h1>
+          <h1 className="page-title mt-mobile">My Events</h1>
           <p className="text-muted">Discover new events and manage your own.</p>
         </div>
-        <Link to="/events/create" style={{ textDecoration: 'none' }} className="w-full-mobile">
-          <button className="btn-primary w-full-mobile" style={{ width: 'auto' }}>
+        <Link to="/events/create" style={{ textDecoration: 'none' }}>
+          <button className="btn-primary" style={{ width: 'auto' }}>
             <CalendarPlus size={20} style={{ marginRight: '8px' }} />
             Create Event
           </button>
@@ -86,15 +86,15 @@ const EventsList: React.FC = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="glass-panel" style={{ padding: '16px', marginBottom: '32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="glass-panel" style={{ padding: '16px', marginBottom: '32px', display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
         
         {/* Search */}
-        <div style={{ position: 'relative' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-          <input 
-            type="text" 
-            className="input-field" 
-            placeholder="Search events by title or description..." 
+        <div style={{ position: 'relative', flex: '1 1 300px' }}>
+          <Search size={18} style={{ position: 'absolute', left: '12px', top: '16px', color: 'var(--text-muted)' }} />
+          <input
+            type="text"
+            className="input-field"
+            placeholder="Search events by title or description..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ paddingLeft: '40px', margin: 0, backgroundColor: 'var(--shadow-color)' }}
@@ -109,6 +109,7 @@ const EventsList: React.FC = () => {
             {([['all', 'All'], ['hosting', 'Hosting'], ['attending', 'Attending']] as const).map(([cat, label]) => (
               <button
                 key={cat}
+                className="tab-btn-mobile"
                 onClick={() => { setCategory(cat); setPage(1); }}
                 style={{
                   padding: '8px 20px',
@@ -128,7 +129,7 @@ const EventsList: React.FC = () => {
             ))}
           </div>
 
-          {/* Upcoming / Past toggle — pushed to the right */}
+          {/* Upcoming / Past toggle */}
           <div className="w-full-mobile" style={{
             display: 'flex',
             backgroundColor: 'var(--overlay-light)',
